@@ -1097,7 +1097,14 @@
     async function apiReq(endpoint, method = 'GET', body = null) {
       try {
         const fullUrl = (API_BASE ? API_BASE : '') + endpoint;
-        const opts = { method, headers: { 'Content-Type': 'application/json' } };
+        const opts = { 
+          method, 
+          headers: { 
+            'Content-Type': 'application/json',
+            'Bypass-Tunnel-Reminder': 'true',
+            'ngrok-skip-browser-warning': 'true'
+          } 
+        };
         if (body) opts.body = JSON.stringify(body);
         const res = await fetch(fullUrl, opts);
         return await res.json();
@@ -1288,12 +1295,28 @@
     }
 
     // --- SCREENSHOT & ARTIFACTS ---
-    function refreshScreenshot() {
+    async function refreshScreenshot() {
       haptic('light');
       const img = document.getElementById('screenImg');
-      if (img) {
+      if (!img) return;
+      try {
         const fullUrl = (API_BASE ? API_BASE : '') + '/api/screenshot?t=' + Date.now();
-        img.src = fullUrl;
+        const resp = await fetch(fullUrl, {
+          headers: {
+            'Bypass-Tunnel-Reminder': 'true',
+            'ngrok-skip-browser-warning': 'true'
+          }
+        });
+        if (resp.ok) {
+          const blob = await resp.blob();
+          if (img.dataset.prevUrl) URL.revokeObjectURL(img.dataset.prevUrl);
+          const objUrl = URL.createObjectURL(blob);
+          img.dataset.prevUrl = objUrl;
+          img.src = objUrl;
+          img.style.display = 'block';
+        }
+      } catch (e) {
+        console.warn('Screenshot fetch error:', e);
       }
     }
 
