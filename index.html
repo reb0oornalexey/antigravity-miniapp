@@ -3,29 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>Antigravity Studio</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
       --bg-base: #000000;
-      --bg-surface: rgba(28, 28, 30, 0.65);
-      --bg-surface-elevated: rgba(44, 44, 46, 0.75);
+      --bg-surface: rgba(28, 28, 30, 0.72);
+      --bg-surface-elevated: rgba(44, 44, 46, 0.85);
       --bg-glass: rgba(255, 255, 255, 0.08);
       --glass-border: rgba(255, 255, 255, 0.16);
       --glass-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.28), inset 0 0 0 0.5px rgba(255, 255, 255, 0.12);
-      --glass-shadow: 0 12px 32px 0 rgba(0, 0, 0, 0.45);
+      --glass-shadow: 0 12px 36px 0 rgba(0, 0, 0, 0.5);
       --text-primary: #FFFFFF;
-      --text-secondary: rgba(235, 235, 245, 0.6);
-      --text-tertiary: rgba(235, 235, 245, 0.38);
+      --text-secondary: rgba(235, 235, 245, 0.64);
+      --text-tertiary: rgba(235, 235, 245, 0.40);
       --apple-blue: #0A84FF;
+      --apple-blue-gradient: linear-gradient(135deg, #0A84FF 0%, #0066CC 100%);
       --apple-purple: #BF5AF2;
+      --apple-purple-gradient: linear-gradient(135deg, #BF5AF2 0%, #9035CD 100%);
       --apple-green: #30D158;
       --apple-orange: #FF9F0A;
+      --apple-orange-gradient: linear-gradient(135deg, #FF9F0A 0%, #D97706 100%);
       --apple-red: #FF453A;
       --apple-indigo: #5E5CE6;
       --apple-cyan: #64D2FF;
-      --separator: rgba(255, 255, 255, 0.1);
-      --tabbar-bg: rgba(22, 22, 24, 0.82);
+      --separator: rgba(255, 255, 255, 0.12);
+      --tabbar-bg: rgba(20, 20, 22, 0.88);
+      --spring-physics: cubic-bezier(0.2, 0.9, 0.3, 1);
     }
 
     * {
@@ -45,14 +52,14 @@
       display: flex;
       flex-direction: column;
       padding-top: max(12px, env(safe-area-inset-top));
-      padding-bottom: max(88px, calc(env(safe-area-inset-bottom) + 78px));
+      padding-bottom: max(90px, calc(env(safe-area-inset-bottom) + 80px));
       overflow-x: hidden;
       overflow-y: auto;
       -webkit-font-smoothing: antialiased;
       background-image: 
-        radial-gradient(at 10% 10%, rgba(10, 132, 255, 0.18) 0px, transparent 50%),
-        radial-gradient(at 90% 20%, rgba(191, 90, 242, 0.16) 0px, transparent 50%),
-        radial-gradient(at 50% 80%, rgba(48, 209, 88, 0.12) 0px, transparent 60%);
+        radial-gradient(at 15% 10%, rgba(10, 132, 255, 0.22) 0px, transparent 48%),
+        radial-gradient(at 85% 15%, rgba(191, 90, 242, 0.20) 0px, transparent 48%),
+        radial-gradient(at 50% 85%, rgba(48, 209, 88, 0.15) 0px, transparent 55%);
       background-attachment: fixed;
     }
 
@@ -65,11 +72,11 @@
       z-index: 2;
     }
 
-    /* Dynamic Island Status Capsule (Apple Inspired) */
+    /* Dynamic Island Capsule */
     .dynamic-island {
       background: var(--bg-surface);
-      backdrop-filter: blur(35px) saturate(210%);
-      -webkit-backdrop-filter: blur(35px) saturate(210%);
+      backdrop-filter: blur(40px) saturate(210%);
+      -webkit-backdrop-filter: blur(40px) saturate(210%);
       border: 0.5px solid var(--glass-border);
       box-shadow: var(--glass-shadow), var(--glass-highlight);
       border-radius: 28px;
@@ -78,7 +85,7 @@
       align-items: center;
       justify-content: space-between;
       margin-bottom: 18px;
-      transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+      transition: transform 0.18s var(--spring-physics);
     }
 
     .dynamic-island:active {
@@ -99,159 +106,123 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 12px rgba(10, 132, 255, 0.35);
+      box-shadow: 0 2px 8px rgba(10, 132, 255, 0.4);
     }
 
     .island-icon svg {
       width: 18px;
       height: 18px;
-      fill: #FFFFFF;
+      fill: none;
+      stroke: white;
+      stroke-width: 2.2;
     }
 
-    .island-text h2 {
+    .island-info h2 {
       font-size: 14px;
-      font-weight: 700;
+      font-weight: 600;
       letter-spacing: -0.2px;
       line-height: 1.2;
     }
 
-    .island-text p {
+    .island-info p {
       font-size: 11px;
       color: var(--text-secondary);
-      font-weight: 500;
-    }
-
-    .island-pill {
       display: flex;
       align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      border-radius: 14px;
-      background: rgba(48, 209, 88, 0.16);
-      border: 0.5px solid rgba(48, 209, 88, 0.3);
+      gap: 5px;
+    }
+
+    .status-pulse {
+      width: 7px;
+      height: 7px;
+      background: var(--apple-green);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--apple-green);
+      animation: pulseAnim 2s infinite ease-in-out;
+    }
+
+    @keyframes pulseAnim {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
+
+    .island-badge {
       font-size: 11px;
       font-weight: 600;
-      color: var(--apple-green);
+      padding: 4px 10px;
+      border-radius: 14px;
+      background: rgba(10, 132, 255, 0.18);
+      color: var(--apple-blue);
+      border: 0.5px solid rgba(10, 132, 255, 0.35);
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
 
-    .pill-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--apple-green);
-      box-shadow: 0 0 8px var(--apple-green);
-      animation: pulse 2s infinite ease-in-out;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.45; transform: scale(0.85); }
-    }
-
-    /* Apple Liquid Glass Material Card */
+    /* Apple Liquid Glass Cards */
     .glass-card {
       background: var(--bg-surface);
-      backdrop-filter: blur(35px) saturate(210%);
-      -webkit-backdrop-filter: blur(35px) saturate(210%);
+      backdrop-filter: blur(40px) saturate(210%);
+      -webkit-backdrop-filter: blur(40px) saturate(210%);
       border: 0.5px solid var(--glass-border);
-      border-radius: 22px;
       box-shadow: var(--glass-shadow), var(--glass-highlight);
-      padding: 16px;
-      margin-bottom: 18px;
+      border-radius: 24px;
+      padding: 18px;
+      margin-bottom: 16px;
       position: relative;
       overflow: hidden;
     }
 
-    /* Section Typography */
-    .section-header {
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      color: var(--text-secondary);
-      margin: 20px 4px 10px 4px;
+    .glass-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+    }
+
+    .card-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      margin-bottom: 14px;
     }
 
-    /* Prompt Input Bar (iMessage Style) */
-    .imessage-bar {
-      display: flex;
-      align-items: flex-end;
-      gap: 10px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 0.5px solid var(--glass-border);
-      border-radius: 24px;
-      padding: 6px 6px 6px 14px;
-      transition: all 0.25s ease;
-    }
-
-    .imessage-bar:focus-within {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: var(--apple-blue);
-      box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.25);
-    }
-
-    .imessage-input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      outline: none;
-      color: var(--text-primary);
-      font-size: 15px;
-      font-family: inherit;
-      padding: 8px 0;
-      resize: none;
-      max-height: 100px;
-      user-select: text;
-      -webkit-user-select: text;
-    }
-
-    .imessage-input::placeholder {
-      color: var(--text-tertiary);
-    }
-
-    .imessage-send {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: var(--apple-blue);
-      border: none;
+    .card-title {
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: -0.4px;
       display: flex;
       align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      color: #fff;
-      transition: transform 0.15s cubic-bezier(0.25, 1, 0.5, 1), background 0.15s;
-      flex-shrink: 0;
+      gap: 8px;
     }
 
-    .imessage-send:active {
-      transform: scale(0.9);
-      background: #0066d6;
+    .card-title-icon {
+      font-size: 18px;
     }
 
-    .imessage-send svg {
-      width: 17px;
-      height: 17px;
-      stroke: #fff;
-      stroke-width: 2.5;
-      fill: none;
+    .card-subtitle {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: -6px;
+      margin-bottom: 14px;
+      line-height: 1.4;
     }
 
-    /* 2x2 Action Tiles (iOS Control Center Style) */
-    .control-grid {
+    /* Bento Grid for Fast Actions */
+    .bento-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 12px;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
 
-    .control-tile {
+    .bento-cell {
       background: var(--bg-surface);
-      backdrop-filter: blur(35px) saturate(210%);
-      -webkit-backdrop-filter: blur(35px) saturate(210%);
+      backdrop-filter: blur(40px) saturate(210%);
+      -webkit-backdrop-filter: blur(40px) saturate(210%);
       border: 0.5px solid var(--glass-border);
       box-shadow: var(--glass-shadow), var(--glass-highlight);
       border-radius: 20px;
@@ -259,234 +230,300 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      height: 110px;
+      min-height: 104px;
       cursor: pointer;
-      transition: transform 0.18s cubic-bezier(0.25, 1, 0.5, 1), background 0.15s ease;
+      transition: transform 0.14s var(--spring-physics), background 0.15s ease;
       position: relative;
       overflow: hidden;
     }
 
-    .control-tile:active {
+    .bento-cell:active {
       transform: scale(0.95);
-      background: rgba(255, 255, 255, 0.12);
+      background: var(--bg-surface-elevated);
     }
 
-    .tile-icon {
+    .bento-cell.cell-accent-blue {
+      background: linear-gradient(145deg, rgba(10, 132, 255, 0.22) 0%, rgba(28, 28, 30, 0.7) 100%);
+      border-color: rgba(10, 132, 255, 0.35);
+    }
+
+    .bento-cell.cell-accent-purple {
+      background: linear-gradient(145deg, rgba(191, 90, 242, 0.22) 0%, rgba(28, 28, 30, 0.7) 100%);
+      border-color: rgba(191, 90, 242, 0.35);
+    }
+
+    .bento-cell.cell-accent-orange {
+      background: linear-gradient(145deg, rgba(255, 159, 10, 0.22) 0%, rgba(28, 28, 30, 0.7) 100%);
+      border-color: rgba(255, 159, 10, 0.35);
+    }
+
+    .bento-cell.cell-accent-green {
+      background: linear-gradient(145deg, rgba(48, 209, 88, 0.22) 0%, rgba(28, 28, 30, 0.7) 100%);
+      border-color: rgba(48, 209, 88, 0.35);
+    }
+
+    .cell-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .cell-icon-wrap {
       width: 38px;
       height: 38px;
       border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
     }
 
-    .tile-icon.blue { background: rgba(10, 132, 255, 0.18); color: #0A84FF; }
-    .tile-icon.purple { background: rgba(191, 90, 242, 0.18); color: #BF5AF2; }
-    .tile-icon.green { background: rgba(48, 209, 88, 0.18); color: #30D158; }
-    .tile-icon.red { background: rgba(255, 69, 58, 0.18); color: #FF453A; }
-    .tile-icon.orange { background: rgba(255, 159, 10, 0.18); color: #FF9F0A; }
+    .cell-icon-blue { background: var(--apple-blue-gradient); }
+    .cell-icon-purple { background: var(--apple-purple-gradient); }
+    .cell-icon-orange { background: var(--apple-orange-gradient); }
+    .cell-icon-green { background: linear-gradient(135deg, #30D158 0%, #1E7E34 100%); }
 
-    .tile-icon svg {
-      width: 20px;
-      height: 20px;
-      stroke: currentColor;
-      stroke-width: 2.2;
-      fill: none;
+    .cell-chevron {
+      color: var(--text-tertiary);
     }
 
-    .tile-label h3 {
+    .cell-bottom {
+      margin-top: 10px;
+    }
+
+    .cell-label {
       font-size: 15px;
       font-weight: 600;
-      letter-spacing: -0.2px;
-      margin-bottom: 2px;
+      letter-spacing: -0.3px;
+      line-height: 1.2;
     }
 
-    .tile-label p {
-      font-size: 11px;
+    .cell-desc {
+      font-size: 12px;
       color: var(--text-secondary);
-      font-weight: 400;
+      margin-top: 3px;
     }
 
-    /* Autonomous Modes Hub (Apple Segmented Group) */
-    .mode-hub {
+    /* Interactive Command Bar (iMessage Style) */
+    .prompt-bar-wrap {
       background: var(--bg-surface);
-      backdrop-filter: blur(35px) saturate(210%);
-      -webkit-backdrop-filter: blur(35px) saturate(210%);
+      backdrop-filter: blur(40px) saturate(210%);
+      -webkit-backdrop-filter: blur(40px) saturate(210%);
       border: 0.5px solid var(--glass-border);
       box-shadow: var(--glass-shadow), var(--glass-highlight);
-      border-radius: 22px;
-      overflow: hidden;
-      margin-bottom: 18px;
-    }
-
-    .mode-item {
+      border-radius: 24px;
+      padding: 8px 8px 8px 16px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 15px 16px;
-      cursor: pointer;
-      position: relative;
-      transition: background 0.15s;
+      gap: 10px;
+      margin-bottom: 16px;
     }
 
-    .mode-item:not(:last-child)::after {
-      content: '';
-      position: absolute;
-      left: 60px;
-      right: 0;
-      bottom: 0;
-      height: 0.5px;
-      background: var(--separator);
+    .prompt-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 15px;
     }
 
-    .mode-item:active {
-      background: rgba(255, 255, 255, 0.08);
+    .prompt-input::placeholder {
+      color: var(--text-tertiary);
     }
 
-    .item-left {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .item-icon {
-      width: 34px;
-      height: 34px;
-      border-radius: 10px;
+    .prompt-send-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--apple-blue-gradient);
+      border: none;
       display: flex;
       align-items: center;
       justify-content: center;
+      cursor: pointer;
+      color: white;
+      transition: transform 0.12s var(--spring-physics);
       flex-shrink: 0;
     }
 
-    .item-icon.purple { background: linear-gradient(135deg, #BF5AF2 0%, #5E5CE6 100%); color: #fff; }
-    .item-icon.blue { background: linear-gradient(135deg, #0A84FF 0%, #64D2FF 100%); color: #fff; }
-    .item-icon.green { background: linear-gradient(135deg, #30D158 0%, #34C759 100%); color: #fff; }
+    .prompt-send-btn:active {
+      transform: scale(0.9);
+    }
 
-    .item-icon svg {
+    .prompt-send-btn svg {
       width: 18px;
       height: 18px;
+      fill: none;
       stroke: currentColor;
       stroke-width: 2.2;
-      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      margin-left: -1px;
     }
 
-    .item-title h4 {
-      font-size: 15px;
-      font-weight: 600;
-      letter-spacing: -0.2px;
+    /* Model Cards & Quotas (Fleet 2026) */
+    .model-list-apple {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
 
-    .item-title p {
-      font-size: 12px;
-      color: var(--text-secondary);
-    }
-
-    .badge-pill {
-      padding: 3px 8px;
-      border-radius: 8px;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-    }
-
-    .badge-pill.turbo { background: rgba(191, 90, 242, 0.25); color: #D087F7; border: 0.5px solid rgba(191, 90, 242, 0.4); }
-    .badge-pill.active { background: rgba(48, 209, 88, 0.25); color: #30D158; border: 0.5px solid rgba(48, 209, 88, 0.4); }
-
-    /* Model Cards with Live Quota Meters (2026 Fleet) */
     .model-card-apple {
-      background: var(--bg-surface);
-      backdrop-filter: blur(35px) saturate(210%);
-      -webkit-backdrop-filter: blur(35px) saturate(210%);
-      border: 0.5px solid var(--glass-border);
-      box-shadow: var(--glass-shadow), var(--glass-highlight);
-      border-radius: 20px;
-      padding: 16px;
-      margin-bottom: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 0.5px solid rgba(255, 255, 255, 0.12);
+      border-radius: 18px;
+      padding: 14px 16px;
       cursor: pointer;
-      transition: transform 0.18s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.2s, background 0.2s;
+      transition: all 0.18s var(--spring-physics);
+      position: relative;
     }
 
     .model-card-apple:active {
       transform: scale(0.97);
-      background: rgba(255, 255, 255, 0.1);
     }
 
     .model-card-apple.selected {
-      border-color: var(--apple-blue);
-      box-shadow: 0 0 0 1px var(--apple-blue), var(--glass-shadow);
-      background: rgba(10, 132, 255, 0.12);
+      background: rgba(10, 132, 255, 0.15);
+      border-color: rgba(10, 132, 255, 0.45);
+      box-shadow: 0 0 20px rgba(10, 132, 255, 0.2), inset 0 0 0 1px rgba(10, 132, 255, 0.35);
     }
 
     .model-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 8px;
-    }
-
-    .model-header-wrap {
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      margin-bottom: 6px;
     }
 
     .model-name {
-      font-size: 16px;
-      font-weight: 700;
-      letter-spacing: -0.3px;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.2px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    .model-desc {
+    .model-pill {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-secondary);
+    }
+
+    .model-card-apple.selected .model-pill {
+      background: var(--apple-blue);
+      color: white;
+    }
+
+    .model-details {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       font-size: 12px;
       color: var(--text-secondary);
-      margin-bottom: 12px;
-      line-height: 1.35;
+      margin-bottom: 8px;
     }
 
-    /* Live Quota Bar inside Model Card */
-    .quota-meter {
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: 8px;
+    /* iOS Quota Progress Bar */
+    .quota-track {
+      width: 100%;
       height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
       overflow: hidden;
-      margin-bottom: 6px;
       position: relative;
     }
 
     .quota-fill {
       height: 100%;
-      border-radius: 8px;
-      background: linear-gradient(90deg, #30D158, #64D2FF);
-      transition: width 0.4s ease;
+      border-radius: 3px;
+      transition: width 0.6s var(--spring-physics);
     }
 
-    .quota-fill.medium { background: linear-gradient(90deg, #FF9F0A, #FFD60A); }
-    .quota-fill.low { background: linear-gradient(90deg, #FF453A, #FF9F0A); }
+    .fill-green { background: linear-gradient(90deg, #30D158, #64D2FF); }
+    .fill-purple { background: linear-gradient(90deg, #BF5AF2, #5E5CE6); }
+    .fill-orange { background: linear-gradient(90deg, #FF9F0A, #FF453A); }
 
-    .quota-stats {
+    /* Thinking Effort Tiers Picker */
+    .tier-picker {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 11px;
-      color: var(--text-secondary);
-      font-weight: 500;
+      gap: 6px;
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 0.5px solid rgba(255, 255, 255, 0.08);
     }
 
-    /* iOS Modal Bottom Sheet */
+    .tier-btn {
+      flex: 1;
+      padding: 5px 8px;
+      border-radius: 8px;
+      border: 0.5px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-secondary);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.12s ease;
+    }
+
+    .tier-btn.active {
+      background: rgba(10, 132, 255, 0.25);
+      border-color: var(--apple-blue);
+      color: white;
+    }
+
+    /* Apple Segmented Controls */
+    .segmented-control {
+      background: rgba(118, 118, 128, 0.24);
+      border-radius: 12px;
+      padding: 3px;
+      display: flex;
+      margin-bottom: 16px;
+    }
+
+    .segment-btn {
+      flex: 1;
+      padding: 7px 0;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      border-radius: 9px;
+      cursor: pointer;
+      transition: all 0.18s var(--spring-physics);
+    }
+
+    .segment-btn.active {
+      background: rgba(255, 255, 255, 0.18);
+      color: white;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    /* iOS Bottom Sheets / Modals */
     .sheet-overlay {
       position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.65);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      z-index: 200;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      z-index: 100;
+      display: flex;
+      align-items: flex-end;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.25s ease;
-      display: flex;
-      align-items: flex-end;
     }
 
     .sheet-overlay.active {
@@ -494,39 +531,41 @@
       pointer-events: auto;
     }
 
-    .sheet-content {
+    .bottom-sheet {
       width: 100%;
-      background: rgba(36, 36, 38, 0.95);
-      backdrop-filter: blur(40px) saturate(210%);
-      -webkit-backdrop-filter: blur(40px) saturate(210%);
+      max-width: 540px;
+      margin: 0 auto;
+      background: var(--bg-surface-elevated);
+      backdrop-filter: blur(45px) saturate(210%);
+      -webkit-backdrop-filter: blur(45px) saturate(210%);
       border-top: 0.5px solid var(--glass-border);
-      border-radius: 26px 26px 0 0;
-      padding: 16px 20px max(24px, env(safe-area-inset-bottom)) 20px;
+      border-radius: 28px 28px 0 0;
+      padding: 16px 20px max(24px, env(safe-area-inset-bottom));
       box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.6);
       transform: translateY(100%);
-      transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+      transition: transform 0.32s var(--spring-physics);
     }
 
-    .sheet-overlay.active .sheet-content {
+    .sheet-overlay.active .bottom-sheet {
       transform: translateY(0);
     }
 
     .sheet-handle {
       width: 36px;
-      height: 4px;
-      border-radius: 2px;
-      background: rgba(255, 255, 255, 0.25);
-      margin: 0 auto 16px auto;
+      height: 5px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.3);
+      margin: 0 auto 16px;
     }
 
     .sheet-title {
-      font-size: 18px;
+      font-size: 19px;
       font-weight: 700;
       letter-spacing: -0.4px;
       margin-bottom: 6px;
     }
 
-    .sheet-subtitle {
+    .sheet-desc {
       font-size: 13px;
       color: var(--text-secondary);
       margin-bottom: 16px;
@@ -535,18 +574,45 @@
 
     .sheet-textarea {
       width: 100%;
-      background: rgba(255, 255, 255, 0.08);
-      border: 0.5px solid var(--glass-border);
+      height: 90px;
+      background: rgba(0, 0, 0, 0.35);
+      border: 0.5px solid rgba(255, 255, 255, 0.15);
       border-radius: 14px;
-      padding: 12px 14px;
-      color: #fff;
-      font-size: 15px;
+      padding: 12px;
+      color: white;
       font-family: inherit;
+      font-size: 14px;
       outline: none;
-      min-height: 90px;
+      resize: none;
+      margin-bottom: 12px;
+    }
+
+    .sheet-textarea:focus {
+      border-color: var(--apple-blue);
+    }
+
+    .quick-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
       margin-bottom: 16px;
-      user-select: text;
-      -webkit-user-select: text;
+    }
+
+    .quick-chip {
+      padding: 6px 12px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.08);
+      font-size: 12px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      border: 0.5px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.12s ease;
+    }
+
+    .quick-chip:active {
+      transform: scale(0.96);
+      background: rgba(255, 255, 255, 0.16);
+      color: white;
     }
 
     .sheet-actions {
@@ -554,512 +620,523 @@
       gap: 10px;
     }
 
-    .sheet-btn {
+    .btn-apple {
       flex: 1;
-      height: 48px;
+      padding: 13px 0;
       border-radius: 14px;
-      border: none;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
+      text-align: center;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: transform 0.15s cubic-bezier(0.25, 1, 0.5, 1), background 0.15s;
+      border: none;
+      transition: transform 0.12s var(--spring-physics);
     }
 
-    .sheet-btn:active {
-      transform: scale(0.96);
+    .btn-apple:active {
+      transform: scale(0.97);
     }
 
-    .sheet-btn.primary {
-      background: var(--apple-blue);
-      color: #FFFFFF;
+    .btn-primary {
+      background: var(--apple-blue-gradient);
+      color: white;
+      box-shadow: 0 4px 16px rgba(10, 132, 255, 0.35);
     }
 
-    .sheet-btn.secondary {
+    .btn-secondary {
       background: rgba(255, 255, 255, 0.1);
       color: var(--text-primary);
     }
 
-    /* Screen Viewer Modal (for Live Screenshot preview) */
-    .screen-preview-card {
-      background: rgba(0, 0, 0, 0.4);
-      border: 0.5px solid var(--glass-border);
-      border-radius: 18px;
-      overflow: hidden;
-      margin-bottom: 16px;
-      position: relative;
-      min-height: 180px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .screen-preview-card img {
-      width: 100%;
-      height: auto;
-      display: block;
-      object-fit: contain;
-    }
-
-    .screen-empty-state {
-      text-align: center;
-      color: var(--text-secondary);
-      font-size: 13px;
-      padding: 24px;
-    }
-
-    /* Apple Tab Bar */
+    /* Apple Bottom TabBar (Frosted Glass) */
     .apple-tabbar {
       position: fixed;
-      bottom: 0; left: 0; right: 0;
-      height: max(74px, calc(env(safe-area-inset-bottom) + 58px));
-      padding-bottom: env(safe-area-inset-bottom);
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: max(74px, calc(env(safe-area-inset-bottom) + 54px));
       background: var(--tabbar-bg);
-      backdrop-filter: blur(40px) saturate(210%);
-      -webkit-backdrop-filter: blur(40px) saturate(210%);
+      backdrop-filter: blur(35px) saturate(210%);
+      -webkit-backdrop-filter: blur(35px) saturate(210%);
       border-top: 0.5px solid var(--separator);
       display: flex;
+      align-items: flex-start;
+      padding-top: 8px;
+      z-index: 50;
+    }
+
+    .tabbar-container {
+      width: 100%;
+      max-width: 540px;
+      margin: 0 auto;
+      display: flex;
       justify-content: space-around;
-      align-items: center;
-      z-index: 100;
+      padding: 0 8px;
     }
 
     .apple-tab {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      gap: 4px;
-      color: var(--text-tertiary);
-      font-size: 10px;
-      font-weight: 600;
+      gap: 3px;
       cursor: pointer;
-      width: 72px;
-      transition: color 0.15s, transform 0.15s;
+      color: var(--text-tertiary);
+      transition: color 0.15s ease, transform 0.12s var(--spring-physics);
+      padding: 4px 16px;
+      border-radius: 12px;
+    }
+
+    .apple-tab:active {
+      transform: scale(0.92);
     }
 
     .apple-tab.active {
       color: var(--apple-blue);
     }
 
-    .apple-tab:active {
-      transform: scale(0.9);
-    }
-
     .apple-tab svg {
       width: 22px;
       height: 22px;
-      stroke: currentColor;
-      stroke-width: 2.2;
       fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
     }
 
-    /* Views Switcher */
+    .apple-tab span {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: -0.1px;
+    }
+
+    /* Apple Toast Notification */
+    .apple-toast {
+      position: fixed;
+      top: max(16px, env(safe-area-inset-top));
+      left: 50%;
+      transform: translateX(-50%) translateY(-120%);
+      background: rgba(28, 28, 30, 0.94);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border: 0.5px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      border-radius: 20px;
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 200;
+      transition: transform 0.34s var(--spring-physics);
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .apple-toast.visible {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .toast-emoji {
+      font-size: 18px;
+    }
+
+    .toast-text {
+      font-size: 13px;
+      font-weight: 600;
+      color: white;
+    }
+
+    /* Tabs Content */
     .app-view {
       display: none;
-      animation: tabFadeIn 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+      animation: viewFade 0.22s var(--spring-physics);
     }
 
     .app-view.active {
       display: block;
     }
 
-    @keyframes tabFadeIn {
-      from { opacity: 0; transform: translateY(8px); }
+    @keyframes viewFade {
+      from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Dynamic Island Banner Notification */
-    .apple-toast {
-      position: fixed;
-      top: max(14px, env(safe-area-inset-top));
-      left: 50%;
-      transform: translateX(-50%) translateY(-120%);
-      background: rgba(30, 30, 32, 0.94);
-      backdrop-filter: blur(35px) saturate(210%);
-      -webkit-backdrop-filter: blur(35px) saturate(210%);
-      border: 0.5px solid var(--glass-border);
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), var(--glass-highlight);
-      color: white;
-      padding: 10px 18px;
-      border-radius: 26px;
-      font-size: 14px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      z-index: 999;
-      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-      pointer-events: none;
-    }
-
-    .apple-toast.visible {
-      transform: translateX(-50%) translateY(0);
     }
   </style>
 </head>
 <body>
-  <!-- Apple Notification Banner -->
-  <div id="appleToast" class="apple-toast">
-    <span id="toastEmoji">⚡</span>
-    <span id="toastMsg">Команда выполнена</span>
+
+  <!-- Dynamic Island Notification Toast -->
+  <div class="apple-toast" id="appleToast">
+    <span class="toast-emoji" id="toastEmoji">⚡</span>
+    <span class="toast-text" id="toastMsg">Команда отправлена</span>
   </div>
 
   <div class="container">
-    <!-- Dynamic Island Capsule -->
-    <div class="dynamic-island">
+    <!-- Dynamic Island Header -->
+    <header class="dynamic-island" onclick="triggerAction('quota', 'Обновление квот...')">
       <div class="island-left">
         <div class="island-icon">
-          <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
         </div>
-        <div class="island-text">
-          <h2>Antigravity Suite</h2>
-          <p id="targetAppInfo">Standalone Agent • Port 9333</p>
+        <div class="island-info">
+          <h2>Antigravity CDP</h2>
+          <p><span class="status-pulse"></span> Подключено: 127.0.0.1:9333</p>
         </div>
       </div>
-      <div class="island-pill">
-        <span class="pill-dot"></span>
-        <span>CDP Active</span>
+      <div class="island-badge" id="islandModelBadge">
+        <span>⚡ 3.8 Flash High</span>
       </div>
-    </div>
+    </header>
 
-    <!-- TAB 1: ПУЛЬТ (Dashboard) -->
-    <div id="tab-dashboard" class="app-view active">
-      <!-- iMessage Prompt Box -->
+    <!-- ==================== TAB: CONTROL (ПУЛЬТ) ==================== -->
+    <main class="app-view active" id="tab-control">
+      <!-- iMessage Style Direct Prompt Bar -->
+      <div class="prompt-bar-wrap">
+        <input type="text" class="prompt-input" id="mainPrompt" placeholder="Напишите задачу агенту..." autocomplete="off">
+        <button class="prompt-send-btn" onclick="sendDirectPrompt()" aria-label="Отправить">
+          <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+
+      <!-- Bento Grid: Fast Actions -->
+      <div class="bento-grid">
+        <!-- Screenshot -->
+        <div class="bento-cell cell-accent-blue" onclick="triggerAction('screenshot', 'Делаем скриншот IDE...')">
+          <div class="cell-top">
+            <div class="cell-icon-wrap cell-icon-blue">📸</div>
+            <div class="cell-chevron">›</div>
+          </div>
+          <div class="cell-bottom">
+            <div class="cell-label">Снимок IDE</div>
+            <div class="cell-desc">Полный скриншот окна</div>
+          </div>
+        </div>
+
+        <!-- Latest Response -->
+        <div class="bento-cell cell-accent-purple" onclick="triggerAction('latest', 'Запрашиваем ответ...')">
+          <div class="cell-top">
+            <div class="cell-icon-wrap cell-icon-purple">💬</div>
+            <div class="cell-chevron">›</div>
+          </div>
+          <div class="cell-bottom">
+            <div class="cell-label">Ответ агента</div>
+            <div class="cell-desc">Последний результат</div>
+          </div>
+        </div>
+
+        <!-- Plan Mode -->
+        <div class="bento-cell cell-accent-orange" onclick="openSheet('plan')">
+          <div class="cell-top">
+            <div class="cell-icon-wrap cell-icon-orange">📋</div>
+            <div class="cell-chevron">›</div>
+          </div>
+          <div class="cell-bottom">
+            <div class="cell-label">Plan Mode</div>
+            <div class="cell-desc">Архитектурный план</div>
+          </div>
+        </div>
+
+        <!-- Goal Mode -->
+        <div class="bento-cell cell-accent-green" onclick="openSheet('goal')">
+          <div class="cell-top">
+            <div class="cell-icon-wrap cell-icon-green">🎯</div>
+            <div class="cell-chevron">›</div>
+          </div>
+          <div class="cell-bottom">
+            <div class="cell-label">Goal Mode</div>
+            <div class="cell-desc">Автономная цель</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Toggles -->
       <div class="glass-card">
-        <div class="imessage-bar">
-          <textarea id="mainPrompt" class="imessage-input" rows="1" placeholder="Задайте задачу агенту..."></textarea>
-          <button class="imessage-send" onclick="sendDirectPrompt()">
-            <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-          </button>
+        <div class="card-header">
+          <div class="card-title">
+            <span class="card-title-icon">⚡</span>
+            <span>Режимы выполнения</span>
+          </div>
+          <span style="font-size: 11px; color: var(--apple-green); font-weight: 600;">ACTIVE</span>
         </div>
-      </div>
-
-      <!-- 2x2 Control Center Tiles -->
-      <div class="section-header">Центр управления</div>
-      <div class="control-grid">
-        <div class="control-tile" onclick="triggerAction('/screenshot', '📸 Запрашиваем скриншот экрана...')">
-          <div class="tile-icon blue">
-            <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        <div class="bento-grid" style="margin-bottom: 0;">
+          <div class="bento-cell" style="min-height: 86px;" onclick="triggerAction('turbo', 'Включение Turbo Mode...')">
+            <div class="cell-top">
+              <span style="font-size: 22px;">🚀</span>
+              <span class="model-pill" style="color: var(--apple-blue); background: rgba(10,132,255,0.15);">AUTO-RUN</span>
+            </div>
+            <div class="cell-bottom">
+              <div class="cell-label">Turbo Mode</div>
+              <div class="cell-desc">Без лишних вопросов</div>
+            </div>
           </div>
-          <div class="tile-label">
-            <h3>Скриншот</h3>
-            <p>Снимок окна Antigravity</p>
-          </div>
-        </div>
-
-        <div class="control-tile" onclick="triggerAction('/latest', '💬 Запрашиваем ответ...')">
-          <div class="tile-icon purple">
-            <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-          </div>
-          <div class="tile-label">
-            <h3>Ответ</h3>
-            <p>Последнее сообщение</p>
-          </div>
-        </div>
-
-        <div class="control-tile" onclick="triggerAction('/new', '➕ Создаем новую сессию...')">
-          <div class="tile-icon green">
-            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-          </div>
-          <div class="tile-label">
-            <h3>Новый чат</h3>
-            <p>Сброс контекста диалога</p>
-          </div>
-        </div>
-
-        <div class="control-tile" onclick="triggerAction('/stop', '🛑 Останавливаем агента...')">
-          <div class="tile-icon red">
-            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
-          </div>
-          <div class="tile-label">
-            <h3>Остановить</h3>
-            <p>Прервать работу</p>
+          <div class="bento-cell" style="min-height: 86px;" onclick="triggerAction('files', 'Загрузка артефактов...')">
+            <div class="cell-top">
+              <span style="font-size: 22px;">📦</span>
+              <span class="model-pill">FILES</span>
+            </div>
+            <div class="cell-bottom">
+              <div class="cell-label">Артефакты</div>
+              <div class="cell-desc">Планы и отчеты</div>
+            </div>
           </div>
         </div>
       </div>
+    </main>
 
-      <!-- Autonomous Agent Modes Hub -->
-      <div class="section-header">Автономные режимы</div>
-      <div class="mode-hub">
-        <div class="mode-item" onclick="triggerAction('/turbo', '🚀 Режим Turbo переключен!')">
-          <div class="item-left">
-            <div class="item-icon purple">
-              <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-            </div>
-            <div class="item-title">
-              <h4>Turbo Mode</h4>
-              <p>Оркестрация Claude + Gemini</p>
-            </div>
+    <!-- ==================== TAB: MODELS (ФЛОТ 2026 И КВОТЫ) ==================== -->
+    <main class="app-view" id="tab-models">
+      <div class="glass-card">
+        <div class="card-header">
+          <div class="card-title">
+            <span class="card-title-icon">🤖</span>
+            <span>Флот моделей 2026</span>
           </div>
-          <span class="badge-pill turbo">Multi-Agent</span>
+          <span class="model-pill" style="cursor:pointer;" onclick="triggerAction('quota', 'Обновляем квоты...')">🔄 Обновить</span>
         </div>
+        <p class="card-subtitle">Реальные лимиты и скорость генерации вашего аккаунта Google AI Pro.</p>
 
-        <div class="mode-item" onclick="openSheet('goal')">
-          <div class="item-left">
-            <div class="item-icon blue">
-              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+        <div class="model-list-apple">
+          <!-- Gemini 3.8 Flash -->
+          <div class="model-card-apple selected" onclick="pickModel('Gemini 3.8 Flash High')">
+            <div class="model-top">
+              <div class="model-name">
+                <span>Gemini 3.8 Flash</span>
+                <span class="model-pill">CURRENT</span>
+              </div>
+              <span style="font-size: 12px; font-weight: 600; color: var(--apple-green);">91%</span>
             </div>
-            <div class="item-title">
-              <h4>Goal Mode</h4>
-              <p>Автономная цель до результата</p>
+            <div class="model-details">
+              <span>Сброс через 4 ч. (14:29 UTC)</span>
+              <span>Google DeepMind</span>
             </div>
-          </div>
-          <span class="badge-pill active">Автономно</span>
-        </div>
-
-        <div class="mode-item" onclick="openSheet('plan')">
-          <div class="item-left">
-            <div class="item-icon green">
-              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            <div class="quota-track">
+              <div class="quota-fill fill-green" style="width: 91%;"></div>
             </div>
-            <div class="item-title">
-              <h4>Plan Mode</h4>
-              <p>Генерация архитектурного плана</p>
-            </div>
-          </div>
-          <span class="badge-pill active">Архитектура</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB 2: МОДЕЛИ И ЛИМИТЫ (Models & Quotas 2026) -->
-    <div id="tab-models" class="app-view">
-      <div class="section-header">
-        <span>Флот моделей ИИ (2026)</span>
-        <span onclick="triggerAction('/quota', '📊 Проверяем квоты...')" style="color: var(--apple-blue); cursor: pointer;">Обновить</span>
-      </div>
-
-      <!-- Gemini 4 Argon -->
-      <div class="model-card-apple selected" onclick="pickModel('Gemini 4 Argon (High)')">
-        <div class="model-top">
-          <div class="model-header-wrap">
-            <div class="model-name">Gemini 4 Argon</div>
-            <span class="badge-pill turbo">Флагман 2026</span>
-          </div>
-          <span style="font-size: 12px; font-weight: 700; color: var(--apple-green);">98%</span>
-        </div>
-        <div class="model-desc">Новейшая флагманская мультимодальная модель с молниеносной генерацией и логикой.</div>
-        <div class="quota-meter"><div class="quota-fill" style="width: 98%;"></div></div>
-        <div class="quota-stats"><span>Лимит: Безлимитно</span><span>Сброс: через 24ч</span></div>
-      </div>
-
-      <!-- Claude Opus 4.6 (Thinking) -->
-      <div class="model-card-apple" onclick="pickModel('Claude Opus 4.6 (Thinking)')">
-        <div class="model-top">
-          <div class="model-header-wrap">
-            <div class="model-name">Claude Opus 4.6</div>
-            <span class="badge-pill active">Thinking</span>
-          </div>
-          <span style="font-size: 12px; font-weight: 700; color: var(--apple-blue);">85%</span>
-        </div>
-        <div class="model-desc">Эталон глубоких рассуждений, сложных алгоритмов и архитектурных рефакторингов.</div>
-        <div class="quota-meter"><div class="quota-fill" style="width: 85%;"></div></div>
-        <div class="quota-stats"><span>Лимит: Высокий</span><span>Сброс: через 4ч</span></div>
-      </div>
-
-      <!-- Claude Sonnet 4.6 (Thinking) -->
-      <div class="model-card-apple" onclick="pickModel('Claude Sonnet 4.6 (Thinking)')">
-        <div class="model-top">
-          <div class="model-header-wrap">
-            <div class="model-name">Claude Sonnet 4.6</div>
-            <span class="badge-pill active">Fast Pro</span>
-          </div>
-          <span style="font-size: 12px; font-weight: 700; color: var(--apple-green);">92%</span>
-        </div>
-        <div class="model-desc">Идеальный баланс между скоростью печати кода и высочайшим интеллектом.</div>
-        <div class="quota-meter"><div class="quota-fill" style="width: 92%;"></div></div>
-        <div class="quota-stats"><span>Лимит: Доступно</span><span>Сброс: через 4ч</span></div>
-      </div>
-
-      <!-- Gemini 3.5 Flash (Medium) -->
-      <div class="model-card-apple" onclick="pickModel('Gemini 3.5 Flash (Medium)')">
-        <div class="model-top">
-          <div class="model-header-wrap">
-            <div class="model-name">Gemini 3.5 Flash</div>
-            <span class="badge-pill" style="background: rgba(48, 209, 88, 0.2); color: var(--apple-green);">Default</span>
-          </div>
-          <span style="font-size: 12px; font-weight: 700; color: var(--apple-green);">100%</span>
-        </div>
-        <div class="model-desc">Сбалансированная рабочая модель для быстрых правок и рутинных скриптов.</div>
-        <div class="quota-meter"><div class="quota-fill" style="width: 100%;"></div></div>
-        <div class="quota-stats"><span>Лимит: Максимальный</span><span>Сброс: активен</span></div>
-      </div>
-
-      <!-- Gemini 3.1 Pro (High) -->
-      <div class="model-card-apple" onclick="pickModel('Gemini 3.1 Pro (High)')">
-        <div class="model-top">
-          <div class="model-header-wrap">
-            <div class="model-name">Gemini 3.1 Pro</div>
-            <span class="badge-pill turbo">Pro Tier</span>
-          </div>
-          <span style="font-size: 12px; font-weight: 700; color: var(--apple-orange);">64%</span>
-        </div>
-        <div class="model-desc">Мощная аналитика больших кодовых баз и работа со сложными протоколами.</div>
-        <div class="quota-meter"><div class="quota-fill medium" style="width: 64%;"></div></div>
-        <div class="quota-stats"><span>Лимит: Средний</span><span>Сброс: через 1ч 20м</span></div>
-      </div>
-    </div>
-
-    <!-- TAB 3: ПРОЕКТЫ И ФАЙЛЫ (Files & Workspaces) -->
-    <div id="tab-workspace" class="app-view">
-      <div class="section-header">Файловая система и артефакты</div>
-      <div class="mode-hub">
-        <div class="mode-item" onclick="triggerAction('/workspace', '📁 Открываем список проектов...')">
-          <div class="item-left">
-            <div class="item-icon blue">
-              <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-            </div>
-            <div class="item-title">
-              <h4>Воркспейс (Проект)</h4>
-              <p>Переключить рабочую директорию</p>
+            <!-- Effort Tiers -->
+            <div class="tier-picker">
+              <div class="tier-btn" onclick="event.stopPropagation(); pickModel('Gemini 3.8 Flash Low')">Low</div>
+              <div class="tier-btn" onclick="event.stopPropagation(); pickModel('Gemini 3.8 Flash Medium')">Medium</div>
+              <div class="tier-btn active" onclick="event.stopPropagation(); pickModel('Gemini 3.8 Flash High')">High (Thinking)</div>
             </div>
           </div>
-          <span style="color: var(--text-tertiary); font-size: 14px;">›</span>
-        </div>
 
-        <div class="mode-item" onclick="triggerAction('/file', '📂 Запрашиваем проводник файлов...')">
-          <div class="item-left">
-            <div class="item-icon green">
-              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <!-- Claude Sonnet 4.6 (Thinking) -->
+          <div class="model-card-apple" onclick="pickModel('Claude Sonnet 4.6 (Thinking)')">
+            <div class="model-top">
+              <div class="model-name">
+                <span>Claude Sonnet 4.6</span>
+                <span class="model-pill" style="color: var(--apple-purple); background: rgba(191,90,242,0.15);">THINKING</span>
+              </div>
+              <span style="font-size: 12px; font-weight: 600; color: var(--apple-blue);">50%</span>
             </div>
-            <div class="item-title">
-              <h4>Проводник проекта</h4>
-              <p>Обзор и скачивание файлов</p>
+            <div class="model-details">
+              <span>Сброс 20 октября (42 ч.)</span>
+              <span>Anthropic</span>
+            </div>
+            <div class="quota-track">
+              <div class="quota-fill fill-purple" style="width: 50%;"></div>
             </div>
           </div>
-          <span style="color: var(--text-tertiary); font-size: 14px;">›</span>
-        </div>
 
-        <div class="mode-item" onclick="triggerAction('/artifacts', '📦 Получаем артефакты...')">
-          <div class="item-left">
-            <div class="item-icon purple">
-              <svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+          <!-- Claude Opus 4.6 (Thinking) -->
+          <div class="model-card-apple" onclick="pickModel('Claude Opus 4.6 (Thinking)')">
+            <div class="model-top">
+              <div class="model-name">
+                <span>Claude Opus 4.6</span>
+                <span class="model-pill" style="color: var(--apple-purple); background: rgba(191,90,242,0.15);">THINKING</span>
+              </div>
+              <span style="font-size: 12px; font-weight: 600; color: var(--apple-blue);">50%</span>
             </div>
-            <div class="item-title">
-              <h4>Артефакты сессии</h4>
-              <p>Сгенерированные планы и чеклисты</p>
+            <div class="model-details">
+              <span>Сброс 20 октября (42 ч.)</span>
+              <span>Anthropic</span>
+            </div>
+            <div class="quota-track">
+              <div class="quota-fill fill-purple" style="width: 50%;"></div>
             </div>
           </div>
-          <span style="color: var(--text-tertiary); font-size: 14px;">›</span>
-        </div>
 
-        <div class="mode-item" onclick="triggerAction('/closeall', '🧹 Закрываем все вкладки...')">
-          <div class="item-left">
-            <div class="item-icon" style="background: rgba(255, 69, 58, 0.2); color: var(--apple-red);">
-              <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          <!-- Gemini 4 Argon -->
+          <div class="model-card-apple" onclick="pickModel('Gemini 4 Argon')">
+            <div class="model-top">
+              <div class="model-name">
+                <span>Gemini 4 Argon</span>
+                <span class="model-pill" style="color: var(--apple-orange); background: rgba(255,159,10,0.15);">NEXT-GEN</span>
+              </div>
+              <span style="font-size: 12px; font-weight: 600; color: var(--apple-orange);">100%</span>
             </div>
-            <div class="item-title">
-              <h4>Закрыть все вкладки</h4>
-              <p>Очистить открытые файлы в IDE</p>
+            <div class="model-details">
+              <span>Новейший флагман Google</span>
+              <span>DeepMind 2026</span>
+            </div>
+            <div class="quota-track">
+              <div class="quota-fill fill-orange" style="width: 100%;"></div>
             </div>
           </div>
-          <span style="color: var(--text-tertiary); font-size: 14px;">›</span>
+
+          <!-- GPT-OSS 120B -->
+          <div class="model-card-apple" onclick="pickModel('GPT-OSS 120B (Medium)')">
+            <div class="model-top">
+              <div class="model-name">
+                <span>GPT-OSS 120B</span>
+                <span class="model-pill">LOCAL</span>
+              </div>
+              <span style="font-size: 12px; font-weight: 600; color: var(--apple-green);">UNLIMITED</span>
+            </div>
+            <div class="model-details">
+              <span>Открытые веса без квот</span>
+              <span>Medium Effort</span>
+            </div>
+            <div class="quota-track">
+              <div class="quota-fill fill-green" style="width: 100%;"></div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </main>
 
-    <!-- TAB 4: НАСТРОЙКИ (Apple System Preferences) -->
-    <div id="tab-settings" class="app-view">
-      <div class="section-header">Системные параметры</div>
-      <div class="mode-hub">
-        <div class="mode-item" onclick="triggerAction('/autoaccept', '⚡ Переключение авто-подтверждения')">
-          <div class="item-left">
-            <div class="item-icon green">
-              <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
-            <div class="item-title">
-              <h4>Auto-Accept</h4>
-              <p>Автоклики Run, Accept, Allow</p>
-            </div>
+    <!-- ==================== TAB: FILES (АРТЕФАКТЫ) ==================== -->
+    <main class="app-view" id="tab-files">
+      <div class="glass-card">
+        <div class="card-header">
+          <div class="card-title">
+            <span class="card-title-icon">📂</span>
+            <span>Артефакты и отчеты</span>
           </div>
-          <span class="badge-pill active">ВКЛЮЧЕН</span>
+          <span class="model-pill">BRAIN</span>
         </div>
+        <p class="card-subtitle">Документы и планы, сгенерированные агентом в рабочей области.</p>
 
-        <div class="mode-item" onclick="triggerAction('/watcher', '👁️ Task Watcher переключен')">
-          <div class="item-left">
-            <div class="item-icon blue">
-              <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        <div class="bento-grid" style="margin-bottom: 0;">
+          <div class="bento-cell" onclick="triggerAction('cmd_L2dldHRhc2s=', 'Загрузка task.md...')">
+            <div class="cell-top">
+              <span style="font-size: 22px;">✅</span>
+              <span class="cell-chevron">›</span>
             </div>
-            <div class="item-title">
-              <h4>Task Watcher</h4>
-              <p>Фоновые уведомления агента</p>
+            <div class="cell-bottom">
+              <div class="cell-label">task.md</div>
+              <div class="cell-desc">Чек-лист задачи</div>
             </div>
           </div>
-          <span class="badge-pill turbo">АКТИВЕН</span>
-        </div>
 
-        <div class="mode-item" onclick="triggerAction('/fix_shortcuts', '🛠️ Обновляем ярлыки рабочего стола...')">
-          <div class="item-left">
-            <div class="item-icon" style="background: rgba(255, 159, 10, 0.2); color: var(--apple-orange);">
-              <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          <div class="bento-cell" onclick="triggerAction('cmd_L2dldHBsYW4=', 'Загрузка плана...')">
+            <div class="cell-top">
+              <span style="font-size: 22px;">📋</span>
+              <span class="cell-chevron">›</span>
             </div>
-            <div class="item-title">
-              <h4>Исправить ярлыки</h4>
-              <p>Прописать ключ CDP 9333</p>
+            <div class="cell-bottom">
+              <div class="cell-label">plan.md</div>
+              <div class="cell-desc">Архитектура</div>
             </div>
           </div>
-          <span style="color: var(--text-tertiary); font-size: 14px;">›</span>
-        </div>
 
-        <div class="mode-item" onclick="triggerAction('/restart', '🔄 Перезапуск бота...')">
-          <div class="item-left">
-            <div class="item-icon" style="background: rgba(255, 69, 58, 0.2); color: var(--apple-red);">
-              <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          <div class="bento-cell" onclick="triggerAction('cmd_L2dldHdhbGs=', 'Загрузка walkthrough...')">
+            <div class="cell-top">
+              <span style="font-size: 22px;">🚶</span>
+              <span class="cell-chevron">›</span>
             </div>
-            <div class="item-title">
-              <h4>Перезапустить бота</h4>
-              <p>Очистить сессию и перезапустить</p>
+            <div class="cell-bottom">
+              <div class="cell-label">walkthrough.md</div>
+              <div class="cell-desc">Итоги работы</div>
             </div>
           </div>
-          <span style="color: var(--text-tertiary); font-size: 14px;">›</span>
+
+          <div class="bento-cell" onclick="triggerAction('files', 'Список файлов...')">
+            <div class="cell-top">
+              <span style="font-size: 22px;">📦</span>
+              <span class="cell-chevron">›</span>
+            </div>
+            <div class="cell-bottom">
+              <div class="cell-label">Все файлы</div>
+              <div class="cell-desc">Показать список</div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </main>
+
+    <!-- ==================== TAB: SETTINGS (НАСТРОЙКИ) ==================== -->
+    <main class="app-view" id="tab-settings">
+      <div class="glass-card">
+        <div class="card-header">
+          <div class="card-title">
+            <span class="card-title-icon">⚙️</span>
+            <span>Параметры системы</span>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div class="bento-cell" style="min-height:auto;" onclick="triggerAction('turbo', 'Смена режима...')">
+            <div class="cell-top">
+              <div class="cell-label">🛡️ Права выполнения</div>
+              <span class="model-pill">Turbo</span>
+            </div>
+            <div class="cell-desc">Автоматическое принятие команд и терминала</div>
+          </div>
+
+          <div class="bento-cell" style="min-height:auto;" onclick="triggerAction('cmd_L25ldw==', 'Создание новой сессии...')">
+            <div class="cell-top">
+              <div class="cell-label">✨ Новая сессия (/new)</div>
+              <span class="cell-chevron">›</span>
+            </div>
+            <div class="cell-desc">Очистить историю диалога и сбросить контекст</div>
+          </div>
+
+          <div class="bento-cell" style="min-height:auto;" onclick="triggerAction('quota', 'Проверка статуса...')">
+            <div class="cell-top">
+              <div class="cell-label">📊 Полная квота (/quota)</div>
+              <span class="cell-chevron">›</span>
+            </div>
+            <div class="cell-desc">Детальный отчет по токенам и лимитам</div>
+          </div>
+        </div>
+      </div>
+    </main>
   </div>
 
-  <!-- iOS Bottom Sheet (Modal for Goal / Plan) -->
-  <div id="actionSheet" class="sheet-overlay" onclick="closeSheet(event)">
-    <div class="sheet-content" onclick="event.stopPropagation()">
+  <!-- ==================== APPLE ACTION SHEET MODAL ==================== -->
+  <div class="sheet-overlay" id="actionSheet" onclick="closeSheet(event)">
+    <div class="bottom-sheet">
       <div class="sheet-handle"></div>
-      <h3 id="sheetTitle" class="sheet-title">Режим планирования</h3>
-      <p id="sheetSubtitle" class="sheet-subtitle">Опишите задачу, и агент составит пошаговый план.</p>
-      <textarea id="sheetInput" class="sheet-textarea" placeholder="Введите подробности задачи..."></textarea>
+      <h3 class="sheet-title" id="sheetTitle">Режим</h3>
+      <p class="sheet-desc" id="sheetSubtitle">Описание задачи</p>
+      
+      <textarea class="sheet-textarea" id="sheetInput" placeholder="Введите подробное описание..."></textarea>
+      
+      <!-- Quick suggestion chips -->
+      <div class="quick-chips" id="sheetChips">
+        <div class="quick-chip" onclick="applyChip('Сделай полный рефакторинг API и добавь тесты')">⚡ Рефакторинг API</div>
+        <div class="quick-chip" onclick="applyChip('Исправь все ошибки сборки и типы')">🛠️ Починить ошибки</div>
+        <div class="quick-chip" onclick="applyChip('Спроектируй систему авторизации с JWT')">🔐 Авторизация JWT</div>
+      </div>
+
       <div class="sheet-actions">
-        <button class="sheet-btn secondary" onclick="closeSheetDirect()">Отмена</button>
-        <button id="sheetConfirmBtn" class="sheet-btn primary" onclick="submitSheet()">Отправить</button>
+        <button class="btn-apple btn-secondary" onclick="closeSheetDirect()">Отмена</button>
+        <button class="btn-apple btn-primary" onclick="submitSheet()">Запустить</button>
       </div>
     </div>
   </div>
 
-  <!-- Apple Tab Bar Navigation -->
+  <!-- ==================== APPLE BOTTOM TABBAR ==================== -->
   <nav class="apple-tabbar">
-    <div class="apple-tab active" onclick="navigateTab('dashboard', this)">
-      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-      <span>Пульт</span>
-    </div>
-    <div class="apple-tab" onclick="navigateTab('models', this)">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
-      <span>Модели</span>
-    </div>
-    <div class="apple-tab" onclick="navigateTab('workspace', this)">
-      <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-      <span>Файлы</span>
-    </div>
-    <div class="apple-tab" onclick="navigateTab('settings', this)">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      <span>Опции</span>
+    <div class="tabbar-container">
+      <div class="apple-tab active" onclick="navigateTab('control', this)">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/></svg>
+        <span>Пульт</span>
+      </div>
+      <div class="apple-tab" onclick="navigateTab('models', this)">
+        <svg viewBox="0 0 24 24"><path d="M12 2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2 2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/><path d="M4 11a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-7z"/><circle cx="9" cy="15" r="1.5"/><circle cx="15" cy="15" r="1.5"/></svg>
+        <span>Модели</span>
+      </div>
+      <div class="apple-tab" onclick="navigateTab('files', this)">
+        <svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+        <span>Файлы</span>
+      </div>
+      <div class="apple-tab" onclick="navigateTab('settings', this)">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>Опции</span>
+      </div>
     </div>
   </nav>
 
   <script>
-    // Configuration
-    const BOT_TOKEN = "8757705953:AAG8QvM6dyQFD3PltfNld011qD185OLv2gc";
-    const CHAT_ID = "359588900";
-
+    const BOT_USERNAME = "reb0oornAG_bot";
     const tg = window.Telegram?.WebApp;
     if (tg) {
       tg.ready();
@@ -1080,7 +1157,7 @@
       } catch (_) {}
     }
 
-    // Dynamic Island Banner
+    // Dynamic Island Toast
     let toastTimer = null;
     function showAppleBanner(text, icon = '⚡') {
       const banner = document.getElementById('appleToast');
@@ -1090,35 +1167,63 @@
       clearTimeout(toastTimer);
       toastTimer = setTimeout(() => {
         banner.classList.remove('visible');
-      }, 2600);
+      }, 2400);
     }
 
-    // Guaranteed Action Execution (Direct Bot API + WebApp Data)
-    async function triggerAction(cmdText, feedback = 'Команда выполняется...') {
+    // Base64URL helper
+    function toBase64Url(str) {
+      return btoa(unescape(encodeURIComponent(str)))
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '');
+    }
+
+    // Guaranteed Cross-Platform Action Dispatcher
+    async function triggerAction(payloadOrCmd, feedback = 'Команда выполняется...') {
       appleHaptic('medium');
       showAppleBanner(feedback, '🚀');
 
-      // 1. Direct Telegram Bot API call (Works ALWAYS, even from Menu Button)
-      try {
-        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            chat_id: CHAT_ID,
-            text: cmdText
-          })
-        }).catch(err => console.error('Bot API delivery error:', err));
-      } catch (e) {}
+      // Prepare deep link payload
+      let deepPayload = payloadOrCmd;
+      let rawCmd = '/' + payloadOrCmd;
 
-      // 2. Also send via WebApp sendData if open in inline mode
+      if (payloadOrCmd.startsWith('/')) {
+        rawCmd = payloadOrCmd;
+        deepPayload = payloadOrCmd.substring(1);
+      }
+
+      // Check for custom commands
+      if (payloadOrCmd.startsWith('cmd_') || payloadOrCmd.startsWith('plan_') || payloadOrCmd.startsWith('goal_') || payloadOrCmd.startsWith('model_')) {
+        deepPayload = payloadOrCmd;
+      }
+
+      // 1. Try native WebApp sendData (works 100% when opened from keyboard)
+      let sentViaData = false;
       try {
         if (tg && typeof tg.sendData === 'function') {
-          tg.sendData(cmdText);
+          tg.sendData(rawCmd);
+          sentViaData = true;
         }
-      } catch (_) {}
+      } catch (err) {
+        console.warn('sendData unsupported in this mode:', err);
+      }
+
+      // 2. Open via Telegram Deep Link (works 100% when opened from Menu Button)
+      setTimeout(() => {
+        try {
+          const deepLink = `https://t.me/${BOT_USERNAME}?start=${encodeURIComponent(deepPayload)}`;
+          if (tg && typeof tg.openTelegramLink === 'function') {
+            tg.openTelegramLink(deepLink);
+          } else {
+            window.location.href = deepLink;
+          }
+        } catch (e) {
+          console.error('DeepLink transition failed:', e);
+        }
+      }, sentViaData ? 300 : 120);
     }
 
-    // Navigation Tabs
+    // Navigation
     function navigateTab(tabId, el) {
       appleHaptic('light');
       document.querySelectorAll('.apple-tab').forEach(t => t.classList.remove('active'));
@@ -1129,16 +1234,17 @@
       if (target) target.classList.add('active');
     }
 
-    // Direct iMessage Prompt
+    // Send Direct Prompt
     function sendDirectPrompt() {
       const field = document.getElementById('mainPrompt');
       const text = field.value.trim();
       if (!text) return;
       
       appleHaptic('success');
-      showAppleBanner('Задача отправлена агенту', '✨');
+      showAppleBanner('Задача передана агенту', '✨');
       field.value = '';
-      triggerAction(text, 'Задача передана агенту в Antigravity');
+      const b64 = toBase64Url(text);
+      triggerAction(`cmd_${b64}`, 'Отправляем задачу в Antigravity...');
     }
 
     // Pick Model
@@ -1146,11 +1252,15 @@
       appleHaptic('success');
       showAppleBanner(`Выбрана: ${modelName}`, '🤖');
       document.querySelectorAll('.model-card-apple').forEach(c => c.classList.remove('selected'));
-      event.currentTarget.classList.add('selected');
-      triggerAction(`/model ${modelName}`, `Переключение на ${modelName}`);
+      if (event && event.currentTarget) {
+        event.currentTarget.classList.add('selected');
+      }
+      document.getElementById('islandModelBadge').innerHTML = `<span>⚡ ${modelName.split(' ')[0]} ${modelName.split(' ')[1] || ''}</span>`;
+      const clean = modelName.replace(/\s+/g, '_');
+      triggerAction(`model_${clean}`, `Переключение на ${modelName}...`);
     }
 
-    // Bottom Sheet Management
+    // Action Sheets
     let currentSheetMode = 'plan';
     function openSheet(mode) {
       appleHaptic('medium');
@@ -1163,16 +1273,21 @@
       if (mode === 'goal') {
         title.textContent = '🎯 Goal Mode (Автономная цель)';
         subtitle.textContent = 'Задайте цель. Агент будет работать самостоятельно без пауз до полного достижения результата.';
-        input.placeholder = 'Пример: Сделай полный рефакторинг API и добавь тесты';
+        input.placeholder = 'Пример: Проведи аудит безопасности и устрани уязвимости';
       } else {
         title.textContent = '📋 Plan Mode (Архитектурный план)';
-        subtitle.textContent = 'Опишите функционал. Агент составит подробный пошаговый план перед кодингом.';
+        subtitle.textContent = 'Опишите задачу. Агент составит пошаговый план и декомпозицию перед кодингом.';
         input.placeholder = 'Пример: Спроектируй систему авторизации с JWT и Refresh-токенами';
       }
 
       input.value = '';
       overlay.classList.add('active');
       setTimeout(() => input.focus(), 250);
+    }
+
+    function applyChip(text) {
+      appleHaptic('light');
+      document.getElementById('sheetInput').value = text;
     }
 
     function closeSheet(e) {
@@ -1190,16 +1305,17 @@
       const text = document.getElementById('sheetInput').value.trim();
       if (!text) return;
       closeSheetDirect();
+      const b64 = toBase64Url(text);
       if (currentSheetMode === 'goal') {
-        triggerAction(`/goal ${text}`, '🎯 Автономная цель запущена');
+        triggerAction(`goal_${b64}`, '🎯 Запуск автономной цели...');
       } else {
-        triggerAction(`/plan ${text}`, '📋 Создание плана запущено');
+        triggerAction(`plan_${b64}`, '📋 Генерация плана...');
       }
     }
 
-    // Support Enter in prompt
+    // Enter in prompt
     document.getElementById('mainPrompt').addEventListener('keydown', function(e) {
-      if (e.key === 'Enter' && !e.shiftKey) {
+      if (e.key === 'Enter') {
         e.preventDefault();
         sendDirectPrompt();
       }
