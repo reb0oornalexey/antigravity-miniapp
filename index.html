@@ -42,6 +42,31 @@
       padding: 0;
       -webkit-tap-highlight-color: transparent;
       user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .msg-bubble, .msg-bubble *, .thought-body, .thought-body *, .thought-body pre, .thought-body code, .chat-textarea, input, textarea {
+      user-select: text !important;
+      -webkit-user-select: text !important;
+    }
+
+    /* Suppress system scrollbars and scrollbar corners to fix black square glitch */
+    .app-view-scrollable, .item-list-apple, #dynamicModelsContainer, #skillsContainer {
+      scrollbar-width: none !important;
+      -ms-overflow-style: none !important;
+      padding-bottom: calc(90px + env(safe-area-inset-bottom, 16px));
+    }
+    .app-view-scrollable::-webkit-scrollbar,
+    .item-list-apple::-webkit-scrollbar,
+    #dynamicModelsContainer::-webkit-scrollbar,
+    #skillsContainer::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
+    ::-webkit-scrollbar-corner {
+      display: none !important;
+      background: transparent !important;
     }
 
     html, body {
@@ -340,11 +365,150 @@
       border-bottom-left-radius: 6px;
     }
 
+    .msg-footer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 5px;
+    }
+
     .msg-time {
       font-size: 10px;
       color: rgba(255, 255, 255, 0.45);
-      margin-top: 5px;
-      text-align: right;
+      user-select: none;
+    }
+
+    .msg-copy-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 0.5px solid rgba(255, 255, 255, 0.14);
+      color: var(--text-tertiary);
+      border-radius: 8px;
+      padding: 2px 7px;
+      font-size: 10.5px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s, color 0.15s;
+    }
+    .msg-copy-btn:active {
+      background: rgba(255, 255, 255, 0.2);
+      color: #FFF;
+    }
+
+    .chat-img-wrap {
+      margin-bottom: 8px;
+      border-radius: 14px;
+      overflow: hidden;
+      max-width: 280px;
+      border: 0.5px solid rgba(255, 255, 255, 0.15);
+      background: rgba(0, 0, 0, 0.35);
+      cursor: pointer;
+    }
+    .chat-msg-img {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 260px;
+      object-fit: cover;
+      transition: transform 0.18s ease;
+    }
+    .chat-msg-img:active {
+      transform: scale(0.98);
+    }
+
+    /* ==================== FULLSCREEN ZOOMABLE IMAGE VIEWER ==================== */
+    .image-viewer-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      background: rgba(10, 11, 16, 0.94);
+      backdrop-filter: blur(40px) saturate(200%);
+      -webkit-backdrop-filter: blur(40px) saturate(200%);
+      touch-action: none;
+      animation: fadeInViewer 0.2s var(--spring-physics);
+    }
+    @keyframes fadeInViewer {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .image-viewer-toolbar {
+      position: absolute;
+      top: calc(14px + env(safe-area-inset-top, 10px));
+      right: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 1010;
+    }
+    .iv-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(30, 32, 45, 0.85);
+      border: 0.5px solid rgba(255, 255, 255, 0.25);
+      color: #FFFFFF;
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+      transition: transform 0.15s, background 0.15s;
+    }
+    .iv-btn:active {
+      transform: scale(0.9);
+      background: rgba(99, 102, 241, 0.6);
+    }
+    .iv-close {
+      background: rgba(239, 68, 68, 0.8);
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+    .image-viewer-stage {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+      cursor: grab;
+    }
+    .image-viewer-stage:active {
+      cursor: grabbing;
+    }
+    #imageViewerImg {
+      max-width: 95vw;
+      max-height: 88vh;
+      object-fit: contain;
+      border-radius: 12px;
+      box-shadow: 0 16px 50px rgba(0, 0, 0, 0.85);
+      transform-origin: center center;
+      transition: transform 0.08s ease-out;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+    .image-viewer-hint {
+      position: absolute;
+      bottom: calc(20px + env(safe-area-inset-bottom, 12px));
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.65);
+      border: 0.5px solid rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.6);
+      pointer-events: none;
+      letter-spacing: -0.1px;
+      user-select: none;
     }
 
     /* Code Blocks in Antigravity Style with Copy Button */
@@ -1048,8 +1212,8 @@
 
     .apple-tab.active svg {
       color: #818CF8;
-      filter: drop-shadow(0 0 10px rgba(129, 140, 248, 0.75));
-      transform: translateY(-1.5px) scale(1.08);
+      filter: drop-shadow(0 0 6px rgba(129, 140, 248, 0.5));
+      transform: translateY(-1.5px) scale(1.08) translateZ(0);
     }
 
     .apple-tab span {
@@ -1288,9 +1452,18 @@
     </div>
   </div>
 
-  <!-- Fullscreen Image Lightbox Overlay -->
-  <div class="sheet-overlay" id="imageOverlay" onclick="closeSheet(event, 'imageOverlay')" style="align-items:center; justify-content:center; padding:16px;">
-    <img id="fullscreenImg" style="max-width:96vw; max-height:86vh; border-radius:16px; box-shadow:0 12px 40px rgba(0,0,0,0.85); object-fit:contain;" />
+  <!-- Fullscreen Interactive Zoomable Image Viewer Modal -->
+  <div class="image-viewer-modal" id="imageViewerModal" style="display:none;">
+    <div class="image-viewer-toolbar">
+      <button class="iv-btn" onclick="zoomImageViewer(0.35)" title="Приблизить">＋</button>
+      <button class="iv-btn" onclick="zoomImageViewer(-0.35)" title="Отдалить">－</button>
+      <button class="iv-btn" onclick="resetImageViewerZoom()" title="Сбросить масштаб">⟲</button>
+      <button class="iv-btn iv-close" onclick="closeImageViewer()" title="Закрыть">✕</button>
+    </div>
+    <div class="image-viewer-stage" id="imageViewerStage">
+      <img id="imageViewerImg" src="" alt="Fullscreen Screenshot" draggable="false" />
+    </div>
+    <div class="image-viewer-hint">Pinch / Колесо мыши для зума • Двойной клик для приближения</div>
   </div>
 
   <!-- Bottom Navigation TabBar (Floating Liquid Glass Island with Spring Gliding Indicator) -->
@@ -1333,9 +1506,14 @@
         }
       } catch (_) {}
 
-      // Handle Telegram BackButton for overlays/sheets
+      // Handle Telegram BackButton for overlays/sheets and image viewer
       if (tg.BackButton) {
         tg.BackButton.onClick(() => {
+          const imgModal = document.getElementById('imageViewerModal');
+          if (imgModal && imgModal.style.display !== 'none') {
+            closeImageViewer();
+            return;
+          }
           const openSheet = document.querySelector('.sheet-overlay.active');
           if (openSheet) {
             openSheet.classList.remove('active');
@@ -1594,6 +1772,12 @@
       const title = document.getElementById('islandTitle');
 
       if (data && data.ok) {
+        if (data.cdpConnected === false) {
+          if (pulse) pulse.style.background = 'var(--apple-orange)';
+          if (title) title.textContent = '✦ Antigravity перезапущен...';
+          setConnectionBanner(true, '⚠️ Antigravity на ПК был перезапущен. Подключение восстанавливается...');
+          return;
+        }
         setConnectionBanner(false);
         if (pulse) pulse.style.background = 'var(--apple-green)';
         if (title) title.textContent = '✦ Antigravity 2.0';
@@ -1619,7 +1803,8 @@
         }
       } else {
         if (pulse) pulse.style.background = 'var(--apple-orange)';
-        if (title) title.textContent = '✦ Подключение...';
+        if (title) title.textContent = '✦ Поиск Antigravity...';
+        setConnectionBanner(true, '⚠️ Поиск активного соединения с Antigravity...');
       }
     }
 
@@ -1644,8 +1829,12 @@
       haptic('light');
       const input = document.getElementById('chatInput');
       if (input) {
-        input.value = prefix;
+        let current = input.value || '';
+        // Убираем уже существующий слеш-префикс если был (/goal, /plan и т.д.)
+        current = current.replace(/^\/(goal|plan|browser|learn|boost|schedule|automation)\s*/i, '');
+        input.value = prefix.trimEnd() + ' ' + current;
         input.focus();
+        input.setSelectionRange(input.value.length, input.value.length);
         autoResizeChatInput(input);
       }
     }
@@ -1714,6 +1903,36 @@
         const orig = btn.innerText;
         btn.innerText = 'Скопировано! ✓';
         setTimeout(() => { btn.innerText = orig; }, 1800);
+      }).catch(() => {});
+    }
+
+    function copyEntireMessage(btn) {
+      const wrapper = btn.closest('.msg-wrapper');
+      if (!wrapper) return;
+      const bubble = wrapper.querySelector('.msg-bubble');
+      if (!bubble) return;
+
+      const clone = bubble.cloneNode(true);
+      clone.querySelectorAll('.thought-spoiler').forEach(el => el.remove());
+      clone.querySelectorAll('.ag-action-badge').forEach(el => el.remove());
+      clone.querySelectorAll('.code-copy-btn').forEach(el => el.remove());
+      clone.querySelectorAll('.chat-img-wrap').forEach(el => el.remove());
+      clone.querySelectorAll('.msg-footer').forEach(el => el.remove());
+      const text = (clone.innerText || clone.textContent || '').trim();
+
+      if (!text) return;
+      navigator.clipboard.writeText(text).then(() => {
+        haptic('light');
+        const span = btn.querySelector('span');
+        const orig = span ? span.textContent : '';
+        if (span) span.textContent = 'Скопировано! ✓';
+        btn.style.color = 'var(--apple-green)';
+        btn.style.borderColor = 'rgba(48, 209, 88, 0.4)';
+        setTimeout(() => {
+          if (span) span.textContent = orig;
+          btn.style.color = '';
+          btn.style.borderColor = '';
+        }, 1800);
       }).catch(() => {});
     }
 
@@ -1791,7 +2010,7 @@
         return;
       }
 
-      const hash = JSON.stringify(messages.map(m => m.id + (m.text || '').substring(0, 30)));
+      const hash = JSON.stringify(messages.map(m => m.id + (m.text || '').substring(0, 30) + (m.imageUrl || '')));
       if (hash === lastRenderedHash) return;
       lastRenderedHash = hash;
 
@@ -1807,15 +2026,23 @@
       messages.forEach(m => {
         const isUser = m.role === 'user';
         let innerContent = '';
+        const imageHtml = m.imageUrl ? `<div class="chat-img-wrap" onclick="openImageViewer('${escapeHtml(m.imageUrl)}')"><img src="${escapeHtml(m.imageUrl)}" class="chat-msg-img" alt="Скриншот" loading="lazy" /></div>` : '';
 
         if (isUser) {
           innerContent = escapeHtml(m.text || '').replace(/\n/g, '<br>');
           html += `
             <div class="msg-wrapper user">
               <div class="msg-bubble msg-user">
+                ${imageHtml}
                 ${innerContent}
               </div>
-              <div class="msg-time">${m.time || ''}</div>
+              <div class="msg-footer">
+                <button class="msg-copy-btn" onclick="copyEntireMessage(this)" title="Копировать сообщение">
+                  <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                  <span>Копировать</span>
+                </button>
+                <span class="msg-time">${m.time || ''}</span>
+              </div>
             </div>
           `;
         } else {
@@ -1843,7 +2070,10 @@
             });
           }
 
-          // Main assistant text
+          // Main assistant text and images
+          if (imageHtml) {
+            innerContent += imageHtml;
+          }
           innerContent += formatMarkdown(m.text || '');
 
           html += `
@@ -1856,7 +2086,13 @@
               <div class="msg-bubble msg-assistant">
                 ${innerContent}
               </div>
-              <div class="msg-time">${m.time || ''}</div>
+              <div class="msg-footer" style="justify-content: flex-start;">
+                <button class="msg-copy-btn" onclick="copyEntireMessage(this)" title="Копировать ответ">
+                  <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                  <span>Копировать</span>
+                </button>
+                <span class="msg-time">${m.time || ''}</span>
+              </div>
             </div>
           `;
         }
@@ -1885,15 +2121,23 @@
       const userWrapper = document.createElement('div');
       userWrapper.className = 'msg-wrapper user';
       let fileAttachmentPreview = '';
-      if (attachedFileToSend) {
-        fileAttachmentPreview = `<div class="attached-file-pill" style="margin-bottom:6px;"><span class="attach-icon">${attachedFileToSend.type.startsWith('image/') ? '🖼️' : '📄'}</span><span class="attach-name">${escapeHtml(attachedFileToSend.name)}</span></div>`;
+      if (attachedFileToSend && attachedFileToSend.type && attachedFileToSend.type.startsWith('image/')) {
+        fileAttachmentPreview = `<div class="chat-img-wrap" onclick="openImageViewer('${attachedFileToSend.data}')"><img src="${attachedFileToSend.data}" class="chat-msg-img" alt="Скриншот" /></div>`;
+      } else if (attachedFileToSend) {
+        fileAttachmentPreview = `<div class="attached-file-pill" style="margin-bottom:6px;"><span class="attach-icon">📄</span><span class="attach-name">${escapeHtml(attachedFileToSend.name)}</span></div>`;
       }
       userWrapper.innerHTML = `
         <div class="msg-bubble msg-user">
           ${fileAttachmentPreview}
           ${escapeHtml(text).replace(/\n/g, '<br>')}
         </div>
-        <div class="msg-time">Только что</div>
+        <div class="msg-footer">
+          <button class="msg-copy-btn" onclick="copyEntireMessage(this)" title="Копировать сообщение">
+            <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            <span>Копировать</span>
+          </button>
+          <span class="msg-time">Только что</span>
+        </div>
       `;
       list.appendChild(userWrapper);
       list.scrollTop = list.scrollHeight;
@@ -1998,16 +2242,165 @@
       }
     }
 
-    function expandImage(src) {
+    // --- FULLSCREEN ZOOMABLE IMAGE VIEWER ---
+    let ivScale = 1;
+    let ivTranslateX = 0;
+    let ivTranslateY = 0;
+    let ivIsDragging = false;
+    let ivStartX = 0;
+    let ivStartY = 0;
+    let ivInitialDist = 0;
+    let ivInitialScale = 1;
+
+    function openImageViewer(src) {
       if (!src) return;
       haptic('light');
-      const img = document.getElementById('fullscreenImg');
-      const ov = document.getElementById('imageOverlay');
-      if (img && ov) {
-        img.src = src;
-        ov.classList.add('active');
-        try { tg?.BackButton?.show(); } catch (_) {}
+      const modal = document.getElementById('imageViewerModal');
+      const img = document.getElementById('imageViewerImg');
+      if (!modal || !img) return;
+
+      img.src = src;
+      resetImageViewerZoom();
+      modal.style.display = 'flex';
+      try { tg?.BackButton?.show(); } catch (_) {}
+    }
+
+    function expandImage(src) {
+      openImageViewer(src);
+    }
+
+    function closeImageViewer() {
+      haptic('light');
+      const modal = document.getElementById('imageViewerModal');
+      if (modal) modal.style.display = 'none';
+      resetImageViewerZoom();
+      try { tg?.BackButton?.hide(); } catch (_) {}
+    }
+
+    function applyImageTransform(smooth = false) {
+      const img = document.getElementById('imageViewerImg');
+      if (!img) return;
+      img.style.transition = smooth ? 'transform 0.22s var(--spring-physics)' : 'none';
+      img.style.transform = `translate3d(${ivTranslateX}px, ${ivTranslateY}px, 0) scale(${ivScale})`;
+    }
+
+    function resetImageViewerZoom() {
+      ivScale = 1;
+      ivTranslateX = 0;
+      ivTranslateY = 0;
+      applyImageTransform(true);
+    }
+
+    function zoomImageViewer(delta) {
+      haptic('light');
+      const newScale = Math.min(6, Math.max(0.6, ivScale + delta));
+      if (newScale <= 1) {
+        ivTranslateX = 0;
+        ivTranslateY = 0;
       }
+      ivScale = newScale;
+      applyImageTransform(true);
+    }
+
+    function initImageViewerGestures() {
+      const stage = document.getElementById('imageViewerStage');
+      const img = document.getElementById('imageViewerImg');
+      if (!stage || !img) return;
+
+      // Wheel zoom (mouse)
+      stage.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const zoomDelta = e.deltaY < 0 ? 0.25 : -0.25;
+        const newScale = Math.min(6, Math.max(0.6, ivScale + zoomDelta));
+        if (newScale <= 1) {
+          ivTranslateX = 0;
+          ivTranslateY = 0;
+        }
+        ivScale = newScale;
+        applyImageTransform(false);
+      }, { passive: false });
+
+      // Double click / Double tap to toggle zoom
+      stage.addEventListener('dblclick', (e) => {
+        e.preventDefault();
+        haptic('medium');
+        if (ivScale > 1.2) {
+          resetImageViewerZoom();
+        } else {
+          ivScale = 2.5;
+          ivTranslateX = 0;
+          ivTranslateY = 0;
+          applyImageTransform(true);
+        }
+      });
+
+      // Touch handlers (pinch-to-zoom & drag)
+      stage.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 2) {
+          ivIsDragging = false;
+          const t1 = e.touches[0];
+          const t2 = e.touches[1];
+          ivInitialDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+          ivInitialScale = ivScale;
+        } else if (e.touches.length === 1) {
+          ivIsDragging = true;
+          ivStartX = e.touches[0].clientX - ivTranslateX;
+          ivStartY = e.touches[0].clientY - ivTranslateY;
+        }
+      }, { passive: true });
+
+      stage.addEventListener('touchmove', (e) => {
+        if (e.touches.length === 2) {
+          e.preventDefault();
+          const t1 = e.touches[0];
+          const t2 = e.touches[1];
+          const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+          if (ivInitialDist > 0) {
+            const factor = dist / ivInitialDist;
+            ivScale = Math.min(6, Math.max(0.6, ivInitialScale * factor));
+            applyImageTransform(false);
+          }
+        } else if (e.touches.length === 1 && ivIsDragging) {
+          if (ivScale > 1.05) {
+            e.preventDefault();
+            ivTranslateX = e.touches[0].clientX - ivStartX;
+            ivTranslateY = e.touches[0].clientY - ivStartY;
+            applyImageTransform(false);
+          }
+        }
+      }, { passive: false });
+
+      stage.addEventListener('touchend', (e) => {
+        if (e.touches.length === 0) {
+          ivIsDragging = false;
+          if (ivScale < 1) {
+            resetImageViewerZoom();
+          }
+        }
+      });
+
+      // Mouse drag for desktop
+      let isMouseDown = false;
+      stage.addEventListener('mousedown', (e) => {
+        if (e.button !== 0) return;
+        isMouseDown = true;
+        ivStartX = e.clientX - ivTranslateX;
+        ivStartY = e.clientY - ivTranslateY;
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!isMouseDown) return;
+        if (ivScale > 1.05) {
+          e.preventDefault();
+          ivTranslateX = e.clientX - ivStartX;
+          ivTranslateY = e.clientY - ivStartY;
+          applyImageTransform(false);
+        }
+      });
+
+      window.addEventListener('mouseup', () => {
+        isMouseDown = false;
+      });
     }
 
     async function loadArtifacts() {
@@ -2082,6 +2475,75 @@
             } catch (_) {}
           }
 
+          let quotaSectionHtml = '';
+
+          if (m.fiveHourQuota || m.weeklyQuota) {
+            if (m.fiveHourQuota && m.fiveHourQuota.remainingPct !== null && m.fiveHourQuota.remainingPct !== undefined) {
+              const fhPct = Math.max(0, Math.min(100, m.fiveHourQuota.remainingPct));
+              let fhReset = '';
+              if (m.fiveHourQuota.resetTime) {
+                try {
+                  const diffMs = new Date(m.fiveHourQuota.resetTime) - new Date();
+                  if (diffMs > 0) {
+                    const hrs = Math.floor(diffMs / 3600000);
+                    const mins = Math.floor((diffMs % 3600000) / 60000);
+                    fhReset = ` • сброс ${hrs}ч ${mins}м`;
+                  }
+                } catch (_) {}
+              }
+              const fhFill = Math.max(3, fhPct);
+              const fhGrad = fhPct < 20 ? 'linear-gradient(90deg, #FF453A, #FF3B30)' : (fhPct < 50 ? 'linear-gradient(90deg, #FF9F0A, #FFD60A)' : 'linear-gradient(90deg, #30D158, #34C759)');
+              quotaSectionHtml += `
+                <div style="margin-top:6px;">
+                  <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-secondary);">
+                    <span>⚡ 5-часовой лимит</span>
+                    <b style="color:#FFF;">${fhPct}%${fhReset}</b>
+                  </div>
+                  <div class="quota-track" style="margin-top:3px; height:4px;">
+                    <div class="quota-fill" style="width:${fhFill}%; background:${fhGrad};"></div>
+                  </div>
+                </div>
+              `;
+            }
+
+            if (m.weeklyQuota && m.weeklyQuota.remainingPct !== null && m.weeklyQuota.remainingPct !== undefined) {
+              const wkPct = Math.max(0, Math.min(100, m.weeklyQuota.remainingPct));
+              let wkReset = '';
+              if (m.weeklyQuota.resetTime) {
+                try {
+                  const diffMs = new Date(m.weeklyQuota.resetTime) - new Date();
+                  if (diffMs > 0) {
+                    const days = Math.floor(diffMs / 86400000);
+                    const hrs = Math.floor((diffMs % 86400000) / 3600000);
+                    wkReset = ` • сброс ${days > 0 ? days + 'д ' : ''}${hrs}ч`;
+                  }
+                } catch (_) {}
+              }
+              const wkFill = Math.max(3, wkPct);
+              const wkGrad = wkPct < 20 ? 'linear-gradient(90deg, #FF453A, #FF3B30)' : (wkPct < 50 ? 'linear-gradient(90deg, #FF9F0A, #FFD60A)' : 'linear-gradient(90deg, #6366F1, #8B5CF6)');
+              quotaSectionHtml += `
+                <div style="margin-top:6px;">
+                  <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-secondary);">
+                    <span>📅 Недельный лимит</span>
+                    <b style="color:#FFF;">${wkPct}%${wkReset}</b>
+                  </div>
+                  <div class="quota-track" style="margin-top:3px; height:4px;">
+                    <div class="quota-fill" style="width:${wkFill}%; background:${wkGrad};"></div>
+                  </div>
+                </div>
+              `;
+            }
+          }
+
+          if (!quotaSectionHtml) {
+            quotaSectionHtml = `
+              <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">${quotaText}</div>
+              <div class="quota-track" style="margin-top:8px;">
+                <div class="quota-fill" style="width:${fillWidth}%; background:${fillGradient};"></div>
+              </div>
+            `;
+          }
+
           let tiersHtml = '';
           if (Array.isArray(m.tiers) && m.tiers.length > 1) {
             tiersHtml = `<div style="display:flex; gap:6px; margin-top:8px;">` +
@@ -2095,10 +2557,7 @@
                 <span style="font-weight:600; font-size:14px;">${m.name}</span>
                 <span class="model-pill" style="font-weight:700;">${badgeText}</span>
               </div>
-              <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">${quotaText}</div>
-              <div class="quota-track" style="margin-top:8px;">
-                <div class="quota-fill" style="width:${fillWidth}%; background:${fillGradient};"></div>
-              </div>
+              ${quotaSectionHtml}
               ${tiersHtml}
             </div>
           `;
@@ -2300,6 +2759,7 @@
         if (active) updateGlidingPill(active);
       }, 120);
 
+      initImageViewerGestures();
       await initApiBase();
       await loadStatus();
       await loadModels();
