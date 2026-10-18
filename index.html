@@ -1620,31 +1620,38 @@
         const cfgRes = await fetch('config.json?v=' + Date.now(), { cache: 'no-store' });
         if (cfgRes.ok) {
           const cfg = await cfgRes.json();
-          if (cfg && cfg.apiUrl) candidates.push(cfg.apiUrl.replace(/\/$/, ''));
+          if (cfg && cfg.apiUrl && !cfg.apiUrl.includes('api.trycloudflare.com')) {
+            candidates.push(cfg.apiUrl.replace(/\/$/, ''));
+          }
         }
       } catch (_) {}
 
       // Priority 2: Telegram WebApp query param ?server=
       const urlParams = new URLSearchParams(window.location.search);
       const serverParam = urlParams.get('server');
-      if (serverParam) candidates.push(serverParam.replace(/\/$/, ''));
+      if (serverParam && !serverParam.includes('api.trycloudflare.com')) {
+        candidates.push(serverParam.replace(/\/$/, ''));
+      }
 
       // Priority 3: Telegram start_param
       if (tg?.initDataUnsafe?.start_param) {
         const sp = tg.initDataUnsafe.start_param;
         if (sp.startsWith('srv_')) {
           try {
-            candidates.push(atob(sp.replace('srv_', '')).replace(/\/$/, ''));
+            const decoded = atob(sp.replace('srv_', '')).replace(/\/$/, '');
+            if (!decoded.includes('api.trycloudflare.com')) candidates.push(decoded);
           } catch (_) {}
         }
       }
 
       // Priority 4: Cached localStorage
       const cached = localStorage.getItem('ag_studio_api_base');
-      if (cached) candidates.push(cached.replace(/\/$/, ''));
+      if (cached && !cached.includes('api.trycloudflare.com')) {
+        candidates.push(cached.replace(/\/$/, ''));
+      }
 
-      // Deduplicate candidates
-      const uniqueCandidates = [...new Set(candidates.filter(Boolean))];
+      // Deduplicate candidates and filter invalid URLs
+      const uniqueCandidates = [...new Set(candidates.filter(c => c && !c.includes('api.trycloudflare.com')))];
 
       for (const candidate of uniqueCandidates) {
         const alive = await testCandidate(candidate);
