@@ -1005,6 +1005,11 @@
     </div>
   </div>
 
+  <!-- Fullscreen Image Lightbox Overlay -->
+  <div class="sheet-overlay" id="imageOverlay" onclick="closeSheet(event, 'imageOverlay')" style="align-items:center; justify-content:center; padding:16px;">
+    <img id="fullscreenImg" style="max-width:96vw; max-height:86vh; border-radius:16px; box-shadow:0 12px 40px rgba(0,0,0,0.85); object-fit:contain;" />
+  </div>
+
   <!-- Bottom Navigation TabBar (4 Clean Tabs) -->
   <nav class="apple-tabbar">
     <div class="tabbar-container">
@@ -1044,10 +1049,21 @@
       } catch (_) {}
     }
 
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
     // --- DYNAMIC BACKEND AUTO-DISCOVERY (GitHub Pages & Tunnel Bridge) ---
     let API_BASE = '';
+    let consecutiveApiErrors = 0;
 
-    async function initApiBase() {
+    async function initApiBase(forceRefresh = false) {
       // 1. If served directly by local studio server tunnel (not github.io)
       if (!window.location.hostname.includes('github.io')) {
         API_BASE = window.location.origin;
@@ -1057,14 +1073,14 @@
       // 2. Check query string ?server=
       const urlParams = new URLSearchParams(window.location.search);
       const serverParam = urlParams.get('server');
-      if (serverParam) {
+      if (serverParam && !forceRefresh) {
         API_BASE = serverParam.replace(/\/$/, '');
         localStorage.setItem('ag_studio_api_base', API_BASE);
         return;
       }
 
       // 3. Check Telegram WebApp start_param
-      if (tg?.initDataUnsafe?.start_param) {
+      if (tg?.initDataUnsafe?.start_param && !forceRefresh) {
         const sp = tg.initDataUnsafe.start_param;
         if (sp.startsWith('srv_')) {
           try {
@@ -1075,10 +1091,12 @@
         }
       }
 
-      // 4. Check cached localStorage
-      const cached = localStorage.getItem('ag_studio_api_base');
-      if (cached) {
-        API_BASE = cached;
+      // 4. Check cached localStorage if not forcing refresh
+      if (!forceRefresh) {
+        const cached = localStorage.getItem('ag_studio_api_base');
+        if (cached) {
+          API_BASE = cached;
+        }
       }
 
       // 5. Fetch live config.json from GitHub Pages repository
@@ -1095,10 +1113,14 @@
     }
 
     async function apiReq(endpoint, method = 'GET', body = null) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 8000);
+
       try {
         const fullUrl = (API_BASE ? API_BASE : '') + endpoint;
         const opts = { 
           method, 
+          signal: controller.signal,
           headers: { 
             'Content-Type': 'application/json',
             'Bypass-Tunnel-Reminder': 'true',
@@ -1107,9 +1129,25 @@
         };
         if (body) opts.body = JSON.stringify(body);
         const res = await fetch(fullUrl, opts);
-        return await res.json();
+        clearTimeout(timeoutId);
+        
+        if (res.ok) {
+          consecutiveApiErrors = 0;
+          return await res.json();
+        } else {
+          consecutiveApiErrors++;
+          return null;
+        }
       } catch (e) {
-        console.error('API Error:', endpoint, e);
+        clearTimeout(timeoutId);
+        consecutiveApiErrors++;
+        console.warn('API Error:', endpoint, e.message);
+
+        // Auto-heal: if we had multiple errors, reset cached URL and re-query GitHub Pages config
+        if (consecutiveApiErrors >= 3) {
+          localStorage.removeItem('ag_studio_api_base');
+          initApiBase(true);
+        }
         return null;
       }
     }
@@ -1136,7 +1174,18 @@
 
     async function loadStatus() {
       const data = await apiReq('/api/status');
+      const pulse = document.querySelector('.status-pulse');
+      const title = document.getElementById('islandTitle');
+
       if (data && data.ok) {
+        if (pulse) pulse.style.background = 'var(--apple-green)';
+        if (title) title.textContent = 'Antigravity Live';
+
+        if (data.currentWorkspace) {
+          const wsLabel = document.getElementById('activeWorkspaceLabel');
+          if (wsLabel) wsLabel.textContent = data.currentWorkspace;
+        }
+
         if (data.currentModel) {
           const parts = data.currentModel.split(' ');
           document.getElementById('islandModelBadge').textContent = '⚡ ' + parts[0] + ' ' + (parts[1] || '');
@@ -1149,6 +1198,9 @@
             badge.style.color = currentTurboState ? 'var(--apple-green)' : 'var(--apple-red)';
           }
         }
+      } else {
+        if (pulse) pulse.style.background = 'var(--apple-orange)';
+        if (title) title.textContent = 'Подключение...';
       }
     }
 
@@ -1164,52 +1216,100 @@
 
     function formatMarkdown(text) {
       if (!text) return '';
-      let escaped = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-      // Code blocks
-      escaped = escaped.replace(/```([a-z0-9_-]*)\n([\s\S]*?)```/gi, '<pre><code>$2</code></pre>');
-      // Inline code
-      escaped = escaped.replace(/`([^`\n]+)`/g, '<code>$1</code>');
-      // Bold
-      escaped = escaped.replace(/\*\*([^\*\n]+?)\*\*/g, '<b>$1</b>');
-      // Newlines
-      escaped = escaped.replace(/\n/g, '<br>');
-      return escaped;
+      let s = String(text).replace(/\r\n/g, '\n');
+
+      // 1. Extract code blocks so replacements don't mess them up
+      const codeBlocks = [];
+      s = s.replace(/```([a-z0-9_-]*)\n([\s\S]*?)```/gi, (match, lang, code) => {
+        const id = codeBlocks.length;
+        codeBlocks.push(`<pre><code>${escapeHtml(code.trim())}</code></pre>`);
+        return `__CODE_BLOCK_${id}__`;
+      });
+
+      // 2. Escape HTML in remaining text
+      s = escapeHtml(s);
+
+      // 3. Inline code
+      s = s.replace(/`([^`\n]+)`/g, '<code>$1</code>');
+
+      // 4. Bold and italic
+      s = s.replace(/\*\*([^\*\n]+?)\*\*/g, '<b>$1</b>');
+      s = s.replace(/\*([^\*\n]+?)\*/g, '<i>$1</i>');
+
+      // 5. Links [text](url)
+      s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^\s\)]+)\)/g, '<a href="$2" target="_blank" style="color:var(--apple-blue); text-decoration:underline;">$1</a>');
+
+      // 6. Headers
+      s = s.replace(/^### (.*$)/gm, '<h4 style="margin:6px 0 2px; font-size:13px; font-weight:700;">$1</h4>');
+      s = s.replace(/^## (.*$)/gm, '<h3 style="margin:8px 0 3px; font-size:14px; font-weight:700;">$1</h3>');
+
+      // 7. Lists
+      s = s.replace(/^[•\-\*]\s+(.*$)/gm, '• $1');
+
+      // 8. Convert newlines to <br>
+      s = s.replace(/\n/g, '<br>');
+
+      // 9. Restore code blocks
+      codeBlocks.forEach((block, i) => {
+        s = s.replace(`__CODE_BLOCK_${i}__`, block);
+      });
+
+      return s;
     }
 
     function renderMessages(messages) {
-      if (!messages || messages.length === 0) return;
-      const hash = JSON.stringify(messages.map(m => m.id + (m.text || '').substring(0, 20)));
+      const list = document.getElementById('messagesList');
+      if (!list) return;
+
+      if (!messages || messages.length === 0) {
+        list.innerHTML = `
+          <div class="msg-bubble msg-assistant" style="text-align:center; padding:16px;">
+            ✨ <b>Antigravity Studio готова к работе.</b><br>
+            <span style="font-size:12px; color:var(--text-secondary);">Выберите чип выше или введите команду для агента.</span>
+          </div>
+        `;
+        lastRenderedHash = 'empty';
+        return;
+      }
+
+      const hash = JSON.stringify(messages.map(m => m.id + (m.text || '').substring(0, 30)));
       if (hash === lastRenderedHash) return;
       lastRenderedHash = hash;
 
-      const list = document.getElementById('messagesList');
-      let html = '';
+      // Remember open thought spoilers
+      const openThoughtIds = new Set(
+        Array.from(list.querySelectorAll('.thought-spoiler[open]')).map(d => d.dataset.msgId)
+      );
 
+      // Check if user was near the bottom before re-rendering
+      const wasNearBottom = (list.scrollHeight - list.scrollTop - list.clientHeight) < 120;
+
+      let html = '';
       messages.forEach(m => {
         const isUser = m.role === 'user';
         const bubbleClass = isUser ? 'msg-user' : 'msg-assistant';
-
         let innerContent = '';
 
-        // Render thoughts spoiler if present
+        // Render thoughts spoiler
         if (m.thinking && m.thinking.trim()) {
+          const isOpen = openThoughtIds.has(String(m.id)) ? 'open' : '';
           innerContent += `
-            <details class="thought-spoiler">
+            <details class="thought-spoiler" data-msg-id="${m.id}" ${isOpen}>
               <summary>💭 Размышления модели</summary>
               <div class="thought-body">${formatMarkdown(m.thinking)}</div>
             </details>
           `;
         }
 
-        // Render tool actions if present
+        // Render tool actions
         if (Array.isArray(m.tools) && m.tools.length > 0) {
           m.tools.forEach(t => {
-            innerContent += `<div class="tool-chip">🛠️ ${t.name}: ${t.summary}</div><br>`;
+            innerContent += `<div class="tool-chip">🛠️ ${escapeHtml(t.name)}: ${escapeHtml(t.summary)}</div><br>`;
           });
         }
 
         // Render main text
-        innerContent += isUser ? (m.text || '').replace(/\n/g, '<br>') : formatMarkdown(m.text || '');
+        innerContent += isUser ? escapeHtml(m.text || '').replace(/\n/g, '<br>') : formatMarkdown(m.text || '');
 
         html += `
           <div class="msg-bubble ${bubbleClass}">
@@ -1219,7 +1319,9 @@
       });
 
       list.innerHTML = html;
-      list.scrollTop = list.scrollHeight;
+      if (wasNearBottom) {
+        list.scrollTop = list.scrollHeight;
+      }
     }
 
     async function sendChatMessage() {
@@ -1230,28 +1332,37 @@
       haptic('medium');
       input.value = '';
 
-      // Optimistically append user message
+      // Optimistically append user message with safe escaping
       const list = document.getElementById('messagesList');
       const userBubble = document.createElement('div');
       userBubble.className = 'msg-bubble msg-user';
-      userBubble.innerHTML = text.replace(/\n/g, '<br>');
+      userBubble.innerHTML = escapeHtml(text).replace(/\n/g, '<br>');
       list.appendChild(userBubble);
       list.scrollTop = list.scrollHeight;
 
       // Show typing indicator
-      document.getElementById('typingIndicator').classList.add('active');
+      const typingIndicator = document.getElementById('typingIndicator');
+      typingIndicator.classList.add('active');
 
-      const res = await apiReq('/api/chat/send', 'POST', { text });
-      if (res && res.ok) {
-        let attempts = 0;
-        const check = setInterval(async () => {
-          attempts++;
-          await loadChatMessages();
-          if (attempts > 12) {
-            clearInterval(check);
-            document.getElementById('typingIndicator').classList.remove('active');
-          }
-        }, 1800);
+      try {
+        const res = await apiReq('/api/chat/send', 'POST', { text });
+        if (res && res.ok) {
+          let attempts = 0;
+          const check = setInterval(async () => {
+            attempts++;
+            await loadChatMessages();
+            if (attempts > 12) {
+              clearInterval(check);
+              typingIndicator.classList.remove('active');
+            }
+          }, 1800);
+        } else {
+          typingIndicator.classList.remove('active');
+          haptic('error');
+        }
+      } catch (e) {
+        typingIndicator.classList.remove('active');
+        haptic('error');
       }
     }
 
@@ -1321,7 +1432,14 @@
     }
 
     function expandImage(src) {
-      if (src) window.open(src, '_blank');
+      if (!src) return;
+      haptic('light');
+      const img = document.getElementById('fullscreenImg');
+      const ov = document.getElementById('imageOverlay');
+      if (img && ov) {
+        img.src = src;
+        ov.classList.add('active');
+      }
     }
 
     async function loadArtifacts() {
@@ -1427,11 +1545,12 @@
     async function switchModel(modelName) {
       haptic('success');
       document.querySelectorAll('.model-card').forEach(c => c.classList.remove('active'));
-      if (window.event && window.event.currentTarget) window.event.currentTarget.classList.add('active');
+      const card = (window.event?.target)?.closest('.model-card');
+      if (card) card.classList.add('active');
       const parts = modelName.split(' ');
       document.getElementById('islandModelBadge').textContent = '⚡ ' + parts[0] + ' ' + (parts[1] || '');
       await apiReq('/api/model', 'POST', { model: modelName });
-      setTimeout(() => loadModels(), 800);
+      setTimeout(() => loadModels(), 1800);
     }
 
     // --- SKILLS CATALOG ---
@@ -1459,13 +1578,13 @@
         html += `
           <div class="skill-card">
             <div class="skill-header">
-              <span class="skill-name">🧠 ${s.name}</span>
-              <span class="skill-cat-pill">${s.category || 'Custom'}</span>
+              <span class="skill-name">🧠 ${escapeHtml(s.name)}</span>
+              <span class="skill-cat-pill">${escapeHtml(s.category || 'Custom')}</span>
             </div>
-            <div class="skill-desc">${s.desc}</div>
+            <div class="skill-desc">${escapeHtml(s.desc)}</div>
             <div class="skill-action-row">
-              <span style="font-size:11px; color:var(--text-tertiary);">Команда: /skill ${s.name}</span>
-              <button class="skill-run-btn" onclick="applySkillToChat('${s.name}')">Запустить ›</button>
+              <span style="font-size:11px; color:var(--text-tertiary);">Команда: /skill ${escapeHtml(s.name)}</span>
+              <button class="skill-run-btn" data-sname="${encodeURIComponent(s.name)}" onclick="applySkillToChat(decodeURIComponent(this.dataset.sname))">Запустить ›</button>
             </div>
           </div>
         `;
@@ -1505,10 +1624,18 @@
     }
 
     async function createNewChat() {
-      if (confirm('Начать новый диалог? Текущий контекст будет сброшен.')) {
+      const doReset = async () => {
         haptic('success');
         await apiReq('/api/threads/new', 'POST');
         setTimeout(() => loadChatMessages(), 1000);
+      };
+
+      if (tg?.showConfirm) {
+        tg.showConfirm('Начать новый диалог? Текущий контекст будет сброшен.', (ok) => {
+          if (ok) doReset();
+        });
+      } else if (confirm('Начать новый диалог? Текущий контекст будет сброшен.')) {
+        doReset();
       }
     }
 
@@ -1520,7 +1647,7 @@
       if (data && Array.isArray(data.workspaces) && data.workspaces.length > 0) {
         let html = '';
         data.workspaces.forEach(ws => {
-          html += `<div class="item-row-apple" onclick="selectWorkspace('${ws}')"><span>📁 ${ws}</span><span>›</span></div>`;
+          html += `<div class="item-row-apple" data-ws="${encodeURIComponent(ws)}" onclick="selectWorkspace(decodeURIComponent(this.dataset.ws))"><span>📁 ${escapeHtml(ws)}</span><span>›</span></div>`;
         });
         container.innerHTML = html;
       } else {
@@ -1551,7 +1678,7 @@
             g.threads.forEach(t => {
               const name = t.name || t.id || 'Chat';
               const cleanName = name.length > 40 ? name.substring(0, 38) + '...' : name;
-              html += `<div class="item-row-apple" onclick="selectThread('${name}')"><span>💬 ${cleanName}</span><span>›</span></div>`;
+              html += `<div class="item-row-apple" data-th="${encodeURIComponent(name)}" onclick="selectThread(decodeURIComponent(this.dataset.th))"><span>💬 ${escapeHtml(cleanName)}</span><span>›</span></div>`;
             });
           }
         });
