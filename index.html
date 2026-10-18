@@ -4,8 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
   <title>Antigravity Studio</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
@@ -16,9 +14,9 @@
       --bg-glass: rgba(255, 255, 255, 0.08);
       --glass-border: rgba(255, 255, 255, 0.16);
       --glass-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.28), inset 0 0 0 0.5px rgba(255, 255, 255, 0.12);
-      --glass-shadow: 0 12px 36px 0 rgba(0, 0, 0, 0.5);
+      --glass-shadow: 0 12px 36px 0 rgba(0, 0, 0, 0.55);
       --text-primary: #FFFFFF;
-      --text-secondary: rgba(235, 235, 245, 0.64);
+      --text-secondary: rgba(235, 235, 245, 0.65);
       --text-tertiary: rgba(235, 235, 245, 0.40);
       --apple-blue: #0A84FF;
       --apple-blue-gradient: linear-gradient(135deg, #0A84FF 0%, #0066CC 100%);
@@ -26,12 +24,10 @@
       --apple-purple-gradient: linear-gradient(135deg, #BF5AF2 0%, #9035CD 100%);
       --apple-green: #30D158;
       --apple-orange: #FF9F0A;
-      --apple-orange-gradient: linear-gradient(135deg, #FF9F0A 0%, #D97706 100%);
       --apple-red: #FF453A;
-      --apple-indigo: #5E5CE6;
       --apple-cyan: #64D2FF;
       --separator: rgba(255, 255, 255, 0.12);
-      --tabbar-bg: rgba(20, 20, 22, 0.88);
+      --tabbar-bg: rgba(20, 20, 22, 0.90);
       --spring-physics: cubic-bezier(0.2, 0.9, 0.3, 1);
     }
 
@@ -40,8 +36,6 @@
       margin: 0;
       padding: 0;
       -webkit-tap-highlight-color: transparent;
-      user-select: none;
-      -webkit-user-select: none;
     }
 
     body {
@@ -51,10 +45,9 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      padding-top: max(12px, env(safe-area-inset-top));
-      padding-bottom: max(90px, calc(env(safe-area-inset-bottom) + 80px));
+      padding-top: max(8px, env(safe-area-inset-top));
+      padding-bottom: max(78px, calc(env(safe-area-inset-bottom) + 68px));
       overflow-x: hidden;
-      overflow-y: auto;
       -webkit-font-smoothing: antialiased;
       background-image: 
         radial-gradient(at 15% 10%, rgba(10, 132, 255, 0.22) 0px, transparent 48%),
@@ -65,76 +58,112 @@
 
     .container {
       width: 100%;
-      max-width: 540px;
+      max-width: 580px;
       margin: 0 auto;
-      padding: 0 16px;
+      padding: 0 14px;
       position: relative;
       z-index: 2;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
     }
 
-    /* Dynamic Island Capsule */
+    /* Top Bar with Workspace & Thread Pickers */
+    .top-studio-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .ws-pill-btn {
+      background: var(--bg-surface);
+      backdrop-filter: blur(35px) saturate(210%);
+      -webkit-backdrop-filter: blur(35px) saturate(210%);
+      border: 0.5px solid var(--glass-border);
+      box-shadow: var(--glass-highlight);
+      border-radius: 20px;
+      padding: 6px 14px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+      max-width: 65%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      transition: transform 0.14s var(--spring-physics);
+    }
+
+    .ws-pill-btn:active {
+      transform: scale(0.96);
+    }
+
+    .ws-icon {
+      font-size: 15px;
+    }
+
+    .chevron-down {
+      font-size: 11px;
+      color: var(--text-tertiary);
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .icon-round-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--bg-surface);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border: 0.5px solid var(--glass-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: transform 0.12s var(--spring-physics);
+    }
+
+    .icon-round-btn:active {
+      transform: scale(0.92);
+      background: var(--bg-surface-elevated);
+    }
+
+    /* Dynamic Island Status Capsule */
     .dynamic-island {
       background: var(--bg-surface);
       backdrop-filter: blur(40px) saturate(210%);
       -webkit-backdrop-filter: blur(40px) saturate(210%);
       border: 0.5px solid var(--glass-border);
       box-shadow: var(--glass-shadow), var(--glass-highlight);
-      border-radius: 28px;
-      padding: 10px 16px;
+      border-radius: 24px;
+      padding: 8px 14px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 18px;
+      margin-bottom: 14px;
       transition: transform 0.18s var(--spring-physics);
-    }
-
-    .dynamic-island:active {
-      transform: scale(0.98);
     }
 
     .island-left {
       display: flex;
       align-items: center;
-      gap: 10px;
-    }
-
-    .island-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #0A84FF 0%, #BF5AF2 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 2px 8px rgba(10, 132, 255, 0.4);
-    }
-
-    .island-icon svg {
-      width: 18px;
-      height: 18px;
-      fill: none;
-      stroke: white;
-      stroke-width: 2.2;
-    }
-
-    .island-info h2 {
-      font-size: 14px;
-      font-weight: 600;
-      letter-spacing: -0.2px;
-      line-height: 1.2;
-    }
-
-    .island-info p {
-      font-size: 11px;
-      color: var(--text-secondary);
-      display: flex;
-      align-items: center;
-      gap: 5px;
+      gap: 9px;
     }
 
     .status-pulse {
-      width: 7px;
-      height: 7px;
+      width: 8px;
+      height: 8px;
       background: var(--apple-green);
       border-radius: 50%;
       box-shadow: 0 0 8px var(--apple-green);
@@ -143,80 +172,258 @@
 
     @keyframes pulseAnim {
       0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(0.85); }
+      50% { opacity: 0.45; transform: scale(0.85); }
+    }
+
+    .island-title {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: -0.2px;
     }
 
     .island-badge {
       font-size: 11px;
       font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 14px;
+      padding: 3px 9px;
+      border-radius: 12px;
       background: rgba(10, 132, 255, 0.18);
       color: var(--apple-blue);
       border: 0.5px solid rgba(10, 132, 255, 0.35);
-      display: flex;
-      align-items: center;
-      gap: 4px;
+      cursor: pointer;
     }
 
-    /* Apple Liquid Glass Cards */
+    /* Glass Cards */
     .glass-card {
       background: var(--bg-surface);
       backdrop-filter: blur(40px) saturate(210%);
       -webkit-backdrop-filter: blur(40px) saturate(210%);
       border: 0.5px solid var(--glass-border);
       box-shadow: var(--glass-shadow), var(--glass-highlight);
-      border-radius: 24px;
-      padding: 18px;
-      margin-bottom: 16px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .glass-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
-    }
-
-    .card-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      border-radius: 22px;
+      padding: 16px;
       margin-bottom: 14px;
+      position: relative;
     }
 
-    .card-title {
-      font-size: 17px;
-      font-weight: 600;
-      letter-spacing: -0.4px;
+    /* ==================== VIEW 1: CHAT FEED ==================== */
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: calc(100vh - 210px);
+    }
+
+    .messages-scroll {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding-bottom: 16px;
+      overflow-y: auto;
+    }
+
+    .msg-bubble {
+      max-width: 86%;
+      padding: 12px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      line-height: 1.45;
+      word-break: break-word;
+      position: relative;
+      animation: msgPop 0.22s var(--spring-physics);
+    }
+
+    @keyframes msgPop {
+      from { opacity: 0; transform: translateY(8px) scale(0.97); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .msg-user {
+      align-self: flex-end;
+      background: var(--apple-blue-gradient);
+      color: #FFFFFF;
+      border-bottom-right-radius: 6px;
+      box-shadow: 0 4px 14px rgba(10, 132, 255, 0.35);
+    }
+
+    .msg-assistant {
+      align-self: flex-start;
+      background: var(--bg-surface);
+      backdrop-filter: blur(35px) saturate(210%);
+      -webkit-backdrop-filter: blur(35px) saturate(210%);
+      border: 0.5px solid var(--glass-border);
+      box-shadow: var(--glass-highlight);
+      color: var(--text-primary);
+      border-bottom-left-radius: 6px;
+    }
+
+    .msg-time {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.5);
+      margin-top: 4px;
+      text-align: right;
+    }
+
+    .msg-assistant .msg-time {
+      color: var(--text-tertiary);
+    }
+
+    /* Markdown styling inside bubbles */
+    .msg-assistant pre {
+      background: rgba(0, 0, 0, 0.45);
+      border-radius: 10px;
+      padding: 10px;
+      margin: 8px 0;
+      overflow-x: auto;
+      font-family: ui-monospace, Menlo, Monaco, Consolas, monospace;
+      font-size: 12px;
+      border: 0.5px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .msg-assistant code {
+      background: rgba(255, 255, 255, 0.12);
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-family: ui-monospace, Menlo, Monaco, Consolas, monospace;
+    }
+
+    .msg-assistant pre code {
+      background: transparent;
+      padding: 0;
+    }
+
+    .typing-indicator {
+      display: none;
+      align-self: flex-start;
+      background: var(--bg-surface);
+      padding: 10px 16px;
+      border-radius: 18px;
+      border: 0.5px solid var(--glass-border);
+      gap: 5px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .typing-indicator.active {
+      display: flex;
+    }
+
+    .typing-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--apple-blue);
+      border-radius: 50%;
+      animation: typingBounce 1.4s infinite ease-in-out;
+    }
+
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typingBounce {
+      0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+      40% { transform: translateY(-5px); opacity: 1; }
+    }
+
+    /* Bottom Chat Input Bar */
+    .chat-input-bar {
+      position: sticky;
+      bottom: 0;
+      background: rgba(20, 20, 22, 0.85);
+      backdrop-filter: blur(40px) saturate(210%);
+      -webkit-backdrop-filter: blur(40px) saturate(210%);
+      border: 0.5px solid var(--glass-border);
+      box-shadow: var(--glass-shadow), var(--glass-highlight);
+      border-radius: 26px;
+      padding: 6px 8px 6px 16px;
       display: flex;
       align-items: center;
       gap: 8px;
+      margin-top: auto;
     }
 
-    .card-title-icon {
-      font-size: 18px;
+    .chat-textarea {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #FFFFFF;
+      font-family: inherit;
+      font-size: 15px;
+      max-height: 100px;
+      resize: none;
     }
 
-    .card-subtitle {
-      font-size: 13px;
-      color: var(--text-secondary);
-      margin-top: -6px;
-      margin-bottom: 14px;
-      line-height: 1.4;
+    .chat-textarea::placeholder {
+      color: var(--text-tertiary);
     }
 
-    /* Bento Grid for Fast Actions */
+    .chat-send-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--apple-blue-gradient);
+      border: none;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.12s var(--spring-physics);
+      flex-shrink: 0;
+    }
+
+    .chat-send-btn:active {
+      transform: scale(0.9);
+    }
+
+    .chat-send-btn svg {
+      width: 17px;
+      height: 17px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.2;
+    }
+
+    /* ==================== VIEW 2: LIVE SCREENSHOT ==================== */
+    .screenshot-viewer {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .screen-img-wrap {
+      width: 100%;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #111;
+      border: 0.5px solid var(--glass-border);
+      box-shadow: var(--glass-shadow);
+      min-height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .screen-img {
+      width: 100%;
+      height: auto;
+      display: block;
+      cursor: zoom-in;
+    }
+
+    .screen-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    /* Bento Grid */
     .bento-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 12px;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
     .bento-cell {
@@ -226,40 +433,17 @@
       border: 0.5px solid var(--glass-border);
       box-shadow: var(--glass-shadow), var(--glass-highlight);
       border-radius: 20px;
-      padding: 16px;
+      padding: 15px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      min-height: 104px;
+      min-height: 96px;
       cursor: pointer;
-      transition: transform 0.14s var(--spring-physics), background 0.15s ease;
-      position: relative;
-      overflow: hidden;
+      transition: transform 0.14s var(--spring-physics);
     }
 
     .bento-cell:active {
-      transform: scale(0.95);
-      background: var(--bg-surface-elevated);
-    }
-
-    .bento-cell.cell-accent-blue {
-      background: linear-gradient(145deg, rgba(10, 132, 255, 0.22) 0%, rgba(28, 28, 30, 0.7) 100%);
-      border-color: rgba(10, 132, 255, 0.35);
-    }
-
-    .bento-cell.cell-accent-purple {
-      background: linear-gradient(145deg, rgba(191, 90, 242, 0.22) 0%, rgba(28, 28, 30, 0.7) 100%);
-      border-color: rgba(191, 90, 242, 0.35);
-    }
-
-    .bento-cell.cell-accent-orange {
-      background: linear-gradient(145deg, rgba(255, 159, 10, 0.22) 0%, rgba(28, 28, 30, 0.7) 100%);
-      border-color: rgba(255, 159, 10, 0.35);
-    }
-
-    .bento-cell.cell-accent-green {
-      background: linear-gradient(145deg, rgba(48, 209, 88, 0.22) 0%, rgba(28, 28, 30, 0.7) 100%);
-      border-color: rgba(48, 209, 88, 0.35);
+      transform: scale(0.96);
     }
 
     .cell-top {
@@ -268,35 +452,11 @@
       justify-content: space-between;
     }
 
-    .cell-icon-wrap {
-      width: 38px;
-      height: 38px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-    }
-
-    .cell-icon-blue { background: var(--apple-blue-gradient); }
-    .cell-icon-purple { background: var(--apple-purple-gradient); }
-    .cell-icon-orange { background: var(--apple-orange-gradient); }
-    .cell-icon-green { background: linear-gradient(135deg, #30D158 0%, #1E7E34 100%); }
-
-    .cell-chevron {
-      color: var(--text-tertiary);
-    }
-
-    .cell-bottom {
-      margin-top: 10px;
-    }
-
-    .cell-label {
+    .cell-title {
       font-size: 15px;
       font-weight: 600;
-      letter-spacing: -0.3px;
       line-height: 1.2;
+      margin-top: 8px;
     }
 
     .cell-desc {
@@ -305,90 +465,25 @@
       margin-top: 3px;
     }
 
-    /* Interactive Command Bar (iMessage Style) */
-    .prompt-bar-wrap {
-      background: var(--bg-surface);
-      backdrop-filter: blur(40px) saturate(210%);
-      -webkit-backdrop-filter: blur(40px) saturate(210%);
-      border: 0.5px solid var(--glass-border);
-      box-shadow: var(--glass-shadow), var(--glass-highlight);
-      border-radius: 24px;
-      padding: 8px 8px 8px 16px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-
-    .prompt-input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      outline: none;
-      color: var(--text-primary);
-      font-family: inherit;
-      font-size: 15px;
-    }
-
-    .prompt-input::placeholder {
-      color: var(--text-tertiary);
-    }
-
-    .prompt-send-btn {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      background: var(--apple-blue-gradient);
-      border: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      color: white;
-      transition: transform 0.12s var(--spring-physics);
-      flex-shrink: 0;
-    }
-
-    .prompt-send-btn:active {
-      transform: scale(0.9);
-    }
-
-    .prompt-send-btn svg {
-      width: 18px;
-      height: 18px;
-      fill: none;
-      stroke: currentColor;
-      stroke-width: 2.2;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      margin-left: -1px;
-    }
-
-    /* Model Cards & Quotas (Fleet 2026) */
-    .model-list-apple {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .model-card-apple {
+    /* Models List */
+    .model-card {
       background: rgba(255, 255, 255, 0.05);
       border: 0.5px solid rgba(255, 255, 255, 0.12);
       border-radius: 18px;
       padding: 14px 16px;
       cursor: pointer;
+      margin-bottom: 10px;
       transition: all 0.18s var(--spring-physics);
-      position: relative;
     }
 
-    .model-card-apple:active {
+    .model-card:active {
       transform: scale(0.97);
     }
 
-    .model-card-apple.selected {
+    .model-card.active {
       background: rgba(10, 132, 255, 0.15);
-      border-color: rgba(10, 132, 255, 0.45);
-      box-shadow: 0 0 20px rgba(10, 132, 255, 0.2), inset 0 0 0 1px rgba(10, 132, 255, 0.35);
+      border-color: var(--apple-blue);
+      box-shadow: 0 0 16px rgba(10, 132, 255, 0.25);
     }
 
     .model-top {
@@ -398,124 +493,43 @@
       margin-bottom: 6px;
     }
 
-    .model-name {
-      font-size: 15px;
-      font-weight: 600;
-      letter-spacing: -0.2px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
     .model-pill {
       font-size: 10px;
       font-weight: 700;
-      text-transform: uppercase;
-      padding: 3px 8px;
-      border-radius: 10px;
+      padding: 2px 7px;
+      border-radius: 8px;
       background: rgba(255, 255, 255, 0.1);
       color: var(--text-secondary);
     }
 
-    .model-card-apple.selected .model-pill {
+    .model-card.active .model-pill {
       background: var(--apple-blue);
       color: white;
     }
 
-    .model-details {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 12px;
-      color: var(--text-secondary);
-      margin-bottom: 8px;
-    }
-
-    /* iOS Quota Progress Bar */
     .quota-track {
       width: 100%;
       height: 6px;
       background: rgba(255, 255, 255, 0.1);
       border-radius: 3px;
       overflow: hidden;
-      position: relative;
+      margin-top: 8px;
     }
 
     .quota-fill {
       height: 100%;
       border-radius: 3px;
-      transition: width 0.6s var(--spring-physics);
+      background: linear-gradient(90deg, #30D158, #64D2FF);
     }
 
-    .fill-green { background: linear-gradient(90deg, #30D158, #64D2FF); }
-    .fill-purple { background: linear-gradient(90deg, #BF5AF2, #5E5CE6); }
-    .fill-orange { background: linear-gradient(90deg, #FF9F0A, #FF453A); }
-
-    /* Thinking Effort Tiers Picker */
-    .tier-picker {
-      display: flex;
-      gap: 6px;
-      margin-top: 10px;
-      padding-top: 8px;
-      border-top: 0.5px solid rgba(255, 255, 255, 0.08);
-    }
-
-    .tier-btn {
-      flex: 1;
-      padding: 5px 8px;
-      border-radius: 8px;
-      border: 0.5px solid rgba(255, 255, 255, 0.12);
-      background: rgba(255, 255, 255, 0.04);
-      color: var(--text-secondary);
-      font-size: 11px;
-      font-weight: 600;
-      cursor: pointer;
-      text-align: center;
-      transition: all 0.12s ease;
-    }
-
-    .tier-btn.active {
-      background: rgba(10, 132, 255, 0.25);
-      border-color: var(--apple-blue);
-      color: white;
-    }
-
-    /* Apple Segmented Controls */
-    .segmented-control {
-      background: rgba(118, 118, 128, 0.24);
-      border-radius: 12px;
-      padding: 3px;
-      display: flex;
-      margin-bottom: 16px;
-    }
-
-    .segment-btn {
-      flex: 1;
-      padding: 7px 0;
-      text-align: center;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-secondary);
-      border-radius: 9px;
-      cursor: pointer;
-      transition: all 0.18s var(--spring-physics);
-    }
-
-    .segment-btn.active {
-      background: rgba(255, 255, 255, 0.18);
-      color: white;
-      font-weight: 600;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    }
-
-    /* iOS Bottom Sheets / Modals */
+    /* Apple Sheets / Popups */
     .sheet-overlay {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(0, 0, 0, 0.65);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       z-index: 100;
@@ -533,7 +547,7 @@
 
     .bottom-sheet {
       width: 100%;
-      max-width: 540px;
+      max-width: 580px;
       margin: 0 auto;
       background: var(--bg-surface-elevated);
       backdrop-filter: blur(45px) saturate(210%);
@@ -544,6 +558,8 @@
       box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.6);
       transform: translateY(100%);
       transition: transform 0.32s var(--spring-physics);
+      max-height: 80vh;
+      overflow-y: auto;
     }
 
     .sheet-overlay.active .bottom-sheet {
@@ -558,119 +574,59 @@
       margin: 0 auto 16px;
     }
 
-    .sheet-title {
-      font-size: 19px;
-      font-weight: 700;
-      letter-spacing: -0.4px;
-      margin-bottom: 6px;
-    }
-
-    .sheet-desc {
-      font-size: 13px;
-      color: var(--text-secondary);
-      margin-bottom: 16px;
-      line-height: 1.4;
-    }
-
-    .sheet-textarea {
-      width: 100%;
-      height: 90px;
-      background: rgba(0, 0, 0, 0.35);
-      border: 0.5px solid rgba(255, 255, 255, 0.15);
-      border-radius: 14px;
-      padding: 12px;
-      color: white;
-      font-family: inherit;
-      font-size: 14px;
-      outline: none;
-      resize: none;
-      margin-bottom: 12px;
-    }
-
-    .sheet-textarea:focus {
-      border-color: var(--apple-blue);
-    }
-
-    .quick-chips {
+    .item-list-apple {
       display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 16px;
+      flex-direction: column;
+      gap: 8px;
     }
 
-    .quick-chip {
-      padding: 6px 12px;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.08);
-      font-size: 12px;
-      color: var(--text-secondary);
-      cursor: pointer;
+    .item-row-apple {
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.05);
       border: 0.5px solid rgba(255, 255, 255, 0.1);
-      transition: all 0.12s ease;
-    }
-
-    .quick-chip:active {
-      transform: scale(0.96);
-      background: rgba(255, 255, 255, 0.16);
-      color: white;
-    }
-
-    .sheet-actions {
       display: flex;
-      gap: 10px;
-    }
-
-    .btn-apple {
-      flex: 1;
-      padding: 13px 0;
-      border-radius: 14px;
-      font-size: 15px;
-      font-weight: 600;
-      text-align: center;
+      align-items: center;
+      justify-content: space-between;
       cursor: pointer;
-      border: none;
-      transition: transform 0.12s var(--spring-physics);
+      font-size: 14px;
+      font-weight: 500;
+      transition: background 0.12s ease;
     }
 
-    .btn-apple:active {
-      transform: scale(0.97);
+    .item-row-apple:active {
+      background: rgba(255, 255, 255, 0.15);
     }
 
-    .btn-primary {
-      background: var(--apple-blue-gradient);
+    .item-row-apple.active {
+      background: rgba(10, 132, 255, 0.2);
+      border-color: var(--apple-blue);
       color: white;
-      box-shadow: 0 4px 16px rgba(10, 132, 255, 0.35);
     }
 
-    .btn-secondary {
-      background: rgba(255, 255, 255, 0.1);
-      color: var(--text-primary);
-    }
-
-    /* Apple Bottom TabBar (Frosted Glass) */
+    /* Apple TabBar */
     .apple-tabbar {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      height: max(74px, calc(env(safe-area-inset-bottom) + 54px));
+      height: max(68px, calc(env(safe-area-inset-bottom) + 52px));
       background: var(--tabbar-bg);
       backdrop-filter: blur(35px) saturate(210%);
       -webkit-backdrop-filter: blur(35px) saturate(210%);
       border-top: 0.5px solid var(--separator);
       display: flex;
       align-items: flex-start;
-      padding-top: 8px;
+      padding-top: 6px;
       z-index: 50;
     }
 
     .tabbar-container {
       width: 100%;
-      max-width: 540px;
+      max-width: 580px;
       margin: 0 auto;
       display: flex;
       justify-content: space-around;
-      padding: 0 8px;
     }
 
     .apple-tab {
@@ -680,8 +636,8 @@
       gap: 3px;
       cursor: pointer;
       color: var(--text-tertiary);
-      transition: color 0.15s ease, transform 0.12s var(--spring-physics);
-      padding: 4px 16px;
+      transition: color 0.14s ease;
+      padding: 4px 12px;
       border-radius: 12px;
     }
 
@@ -704,49 +660,12 @@
     .apple-tab span {
       font-size: 10px;
       font-weight: 600;
-      letter-spacing: -0.1px;
     }
 
-    /* Apple Toast Notification */
-    .apple-toast {
-      position: fixed;
-      top: max(16px, env(safe-area-inset-top));
-      left: 50%;
-      transform: translateX(-50%) translateY(-120%);
-      background: rgba(28, 28, 30, 0.94);
-      backdrop-filter: blur(30px);
-      -webkit-backdrop-filter: blur(30px);
-      border: 0.5px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-      border-radius: 20px;
-      padding: 10px 18px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      z-index: 200;
-      transition: transform 0.34s var(--spring-physics);
-      pointer-events: none;
-      white-space: nowrap;
-    }
-
-    .apple-toast.visible {
-      transform: translateX(-50%) translateY(0);
-    }
-
-    .toast-emoji {
-      font-size: 18px;
-    }
-
-    .toast-text {
-      font-size: 13px;
-      font-weight: 600;
-      color: white;
-    }
-
-    /* Tabs Content */
+    /* Views switcher */
     .app-view {
       display: none;
-      animation: viewFade 0.22s var(--spring-physics);
+      animation: viewFade 0.18s var(--spring-physics);
     }
 
     .app-view.active {
@@ -754,585 +673,521 @@
     }
 
     @keyframes viewFade {
-      from { opacity: 0; transform: translateY(6px); }
+      from { opacity: 0; transform: translateY(4px); }
       to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 <body>
 
-  <!-- Dynamic Island Notification Toast -->
-  <div class="apple-toast" id="appleToast">
-    <span class="toast-emoji" id="toastEmoji">⚡</span>
-    <span class="toast-text" id="toastMsg">Команда отправлена</span>
-  </div>
-
   <div class="container">
-    <!-- Dynamic Island Header -->
-    <header class="dynamic-island" onclick="triggerAction('quota', 'Обновление квот...')">
-      <div class="island-left">
-        <div class="island-icon">
-          <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+    <!-- Top Bar: Workspace & Thread Selectors -->
+    <div class="top-studio-bar">
+      <div class="ws-pill-btn" onclick="openWorkspacesSheet()">
+        <span class="ws-icon">📁</span>
+        <span id="activeWorkspaceLabel">Антигравити в тг</span>
+        <span class="chevron-down">▼</span>
+      </div>
+
+      <div class="top-actions">
+        <div class="icon-round-btn" onclick="openThreadsSheet()" title="Выбор чата">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         </div>
-        <div class="island-info">
-          <h2>Antigravity CDP</h2>
-          <p><span class="status-pulse"></span> Подключено: 127.0.0.1:9333</p>
+        <div class="icon-round-btn" onclick="createNewChat()" title="Новый диалог">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         </div>
       </div>
-      <div class="island-badge" id="islandModelBadge">
-        <span>⚡ 3.8 Flash High</span>
+    </div>
+
+    <!-- Dynamic Island Header -->
+    <header class="dynamic-island">
+      <div class="island-left">
+        <span class="status-pulse"></span>
+        <span class="island-title" id="islandTitle">Antigravity Live</span>
+      </div>
+      <div class="island-badge" id="islandModelBadge" onclick="navigateTab('models', document.getElementById('tabNavModels'))">
+        ⚡ Gemini 4 Argon
       </div>
     </header>
 
-    <!-- ==================== TAB: CONTROL (ПУЛЬТ) ==================== -->
-    <main class="app-view active" id="tab-control">
-      <!-- iMessage Style Direct Prompt Bar -->
-      <div class="prompt-bar-wrap">
-        <input type="text" class="prompt-input" id="mainPrompt" placeholder="Напишите задачу агенту..." autocomplete="off">
-        <button class="prompt-send-btn" onclick="sendDirectPrompt()" aria-label="Отправить">
-          <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-        </button>
-      </div>
+    <!-- ==================== VIEW 1: STUDIO CHAT ==================== -->
+    <main class="app-view active" id="view-chat">
+      <div class="chat-container">
+        <!-- Messages Scroll Area -->
+        <div class="messages-scroll" id="messagesList">
+          <div class="msg-bubble msg-assistant">
+            ✨ <b>Antigravity Studio подключена</b><br>
+            Вы управляете агентом напрямую без перехода в чат Telegram. Задайте вопрос или отправьте задачу:
+            <div class="msg-time">Только что</div>
+          </div>
+        </div>
 
-      <!-- Bento Grid: Fast Actions -->
+        <!-- Typing Indicator -->
+        <div class="typing-indicator" id="typingIndicator">
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+          <span style="font-size:12px; color:var(--text-secondary); margin-left:6px;">Агент думает...</span>
+        </div>
+
+        <!-- Direct Chat Input Bar -->
+        <div class="chat-input-bar">
+          <textarea class="chat-textarea" id="chatInput" rows="1" placeholder="Сообщение агенту..."></textarea>
+          <button class="chat-send-btn" onclick="sendChatMessage()">
+            <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <!-- ==================== VIEW 2: LIVE SCREENSHOT ==================== -->
+    <main class="app-view" id="view-screen">
+      <div class="glass-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <h3 style="font-size:16px; font-weight:600;">📸 Снимок экрана IDE</h3>
+          <button class="ws-pill-btn" onclick="refreshScreenshot()">🔄 Обновить</button>
+        </div>
+        <div class="screen-img-wrap">
+          <img src="/api/screenshot" class="screen-img" id="screenImg" alt="IDE Screenshot" onclick="expandImage(this.src)">
+        </div>
+      </div>
+    </main>
+
+    <!-- ==================== VIEW 3: MODELS & QUOTAS ==================== -->
+    <main class="app-view" id="view-models">
+      <div class="glass-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <h3 style="font-size:16px; font-weight:600;">🤖 Выбор модели и квоты</h3>
+          <span class="model-pill" onclick="loadStatus()">🔄 Обновить</span>
+        </div>
+
+        <div class="model-card active" onclick="switchModel('Gemini 4 Argon')">
+          <div class="model-top">
+            <span style="font-weight:600;">Gemini 4 Argon</span>
+            <span class="model-pill">FLAGSHIP</span>
+          </div>
+          <div style="font-size:12px; color:var(--text-secondary);">Квота: 100% • Google DeepMind</div>
+          <div class="quota-track"><div class="quota-fill" style="width:100%;"></div></div>
+        </div>
+
+        <div class="model-card" onclick="switchModel('Gemini 3.8 Flash High')">
+          <div class="model-top">
+            <span style="font-weight:600;">Gemini 3.8 Flash (High)</span>
+            <span class="model-pill">91%</span>
+          </div>
+          <div style="font-size:12px; color:var(--text-secondary);">Сброс через 4 ч. • Режим рассуждений</div>
+          <div class="quota-track"><div class="quota-fill" style="width:91%;"></div></div>
+        </div>
+
+        <div class="model-card" onclick="switchModel('Claude Sonnet 4.6 (Thinking)')">
+          <div class="model-top">
+            <span style="font-weight:600;">Claude Sonnet 4.6 (Thinking)</span>
+            <span class="model-pill">50%</span>
+          </div>
+          <div style="font-size:12px; color:var(--text-secondary);">Сброс 20 октября • Anthropic</div>
+          <div class="quota-track"><div class="quota-fill" style="width:50%; background:linear-gradient(90deg, #BF5AF2, #5E5CE6);"></div></div>
+        </div>
+
+        <div class="model-card" onclick="switchModel('Claude Opus 4.6 (Thinking)')">
+          <div class="model-top">
+            <span style="font-weight:600;">Claude Opus 4.6 (Thinking)</span>
+            <span class="model-pill">50%</span>
+          </div>
+          <div style="font-size:12px; color:var(--text-secondary);">Сброс 20 октября • Anthropic</div>
+          <div class="quota-track"><div class="quota-fill" style="width:50%; background:linear-gradient(90deg, #BF5AF2, #5E5CE6);"></div></div>
+        </div>
+
+        <div class="model-card" onclick="switchModel('GPT-OSS 120B (Medium)')">
+          <div class="model-top">
+            <span style="font-weight:600;">GPT-OSS 120B</span>
+            <span class="model-pill">UNLIMITED</span>
+          </div>
+          <div style="font-size:12px; color:var(--text-secondary);">Локальные открытые веса</div>
+          <div class="quota-track"><div class="quota-fill" style="width:100%;"></div></div>
+        </div>
+      </div>
+    </main>
+
+    <!-- ==================== VIEW 4: CONTROL DECK ==================== -->
+    <main class="app-view" id="view-control">
       <div class="bento-grid">
-        <!-- Screenshot -->
-        <div class="bento-cell cell-accent-blue" onclick="triggerAction('screenshot', 'Делаем скриншот IDE...')">
+        <div class="bento-cell" onclick="toggleTurbo()">
           <div class="cell-top">
-            <div class="cell-icon-wrap cell-icon-blue">📸</div>
-            <div class="cell-chevron">›</div>
+            <span style="font-size:24px;">🚀</span>
+            <span class="model-pill" id="turboBadge" style="background:rgba(48,209,88,0.2); color:var(--apple-green);">ON</span>
           </div>
-          <div class="cell-bottom">
-            <div class="cell-label">Снимок IDE</div>
-            <div class="cell-desc">Полный скриншот окна</div>
-          </div>
+          <div class="cell-title">Turbo Mode</div>
+          <div class="cell-desc">Авто-принятие действий</div>
         </div>
 
-        <!-- Latest Response -->
-        <div class="bento-cell cell-accent-purple" onclick="triggerAction('latest', 'Запрашиваем ответ...')">
+        <div class="bento-cell" onclick="openActionPrompt('plan')">
           <div class="cell-top">
-            <div class="cell-icon-wrap cell-icon-purple">💬</div>
-            <div class="cell-chevron">›</div>
+            <span style="font-size:24px;">📋</span>
+            <span class="chevron-down">›</span>
           </div>
-          <div class="cell-bottom">
-            <div class="cell-label">Ответ агента</div>
-            <div class="cell-desc">Последний результат</div>
-          </div>
+          <div class="cell-title">Plan Mode</div>
+          <div class="cell-desc">Архитектура задачи</div>
         </div>
 
-        <!-- Plan Mode -->
-        <div class="bento-cell cell-accent-orange" onclick="openSheet('plan')">
+        <div class="bento-cell" onclick="openActionPrompt('goal')">
           <div class="cell-top">
-            <div class="cell-icon-wrap cell-icon-orange">📋</div>
-            <div class="cell-chevron">›</div>
+            <span style="font-size:24px;">🎯</span>
+            <span class="chevron-down">›</span>
           </div>
-          <div class="cell-bottom">
-            <div class="cell-label">Plan Mode</div>
-            <div class="cell-desc">Архитектурный план</div>
-          </div>
+          <div class="cell-title">Goal Mode</div>
+          <div class="cell-desc">Автономная цель</div>
         </div>
 
-        <!-- Goal Mode -->
-        <div class="bento-cell cell-accent-green" onclick="openSheet('goal')">
+        <div class="bento-cell" onclick="createNewChat()">
           <div class="cell-top">
-            <div class="cell-icon-wrap cell-icon-green">🎯</div>
-            <div class="cell-chevron">›</div>
+            <span style="font-size:24px;">✨</span>
+            <span class="chevron-down">›</span>
           </div>
-          <div class="cell-bottom">
-            <div class="cell-label">Goal Mode</div>
-            <div class="cell-desc">Автономная цель</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Quick Toggles -->
-      <div class="glass-card">
-        <div class="card-header">
-          <div class="card-title">
-            <span class="card-title-icon">⚡</span>
-            <span>Режимы выполнения</span>
-          </div>
-          <span style="font-size: 11px; color: var(--apple-green); font-weight: 600;">ACTIVE</span>
-        </div>
-        <div class="bento-grid" style="margin-bottom: 0;">
-          <div class="bento-cell" style="min-height: 86px;" onclick="triggerAction('turbo', 'Включение Turbo Mode...')">
-            <div class="cell-top">
-              <span style="font-size: 22px;">🚀</span>
-              <span class="model-pill" style="color: var(--apple-blue); background: rgba(10,132,255,0.15);">AUTO-RUN</span>
-            </div>
-            <div class="cell-bottom">
-              <div class="cell-label">Turbo Mode</div>
-              <div class="cell-desc">Без лишних вопросов</div>
-            </div>
-          </div>
-          <div class="bento-cell" style="min-height: 86px;" onclick="triggerAction('files', 'Загрузка артефактов...')">
-            <div class="cell-top">
-              <span style="font-size: 22px;">📦</span>
-              <span class="model-pill">FILES</span>
-            </div>
-            <div class="cell-bottom">
-              <div class="cell-label">Артефакты</div>
-              <div class="cell-desc">Планы и отчеты</div>
-            </div>
-          </div>
+          <div class="cell-title">Новый диалог</div>
+          <div class="cell-desc">Сбросить контекст</div>
         </div>
       </div>
     </main>
 
-    <!-- ==================== TAB: MODELS (ФЛОТ 2026 И КВОТЫ) ==================== -->
-    <main class="app-view" id="tab-models">
+    <!-- ==================== VIEW 5: ARTIFACTS ==================== -->
+    <main class="app-view" id="view-artifacts">
       <div class="glass-card">
-        <div class="card-header">
-          <div class="card-title">
-            <span class="card-title-icon">🤖</span>
-            <span>Флот моделей 2026</span>
-          </div>
-          <span class="model-pill" style="cursor:pointer;" onclick="triggerAction('quota', 'Обновляем квоты...')">🔄 Обновить</span>
-        </div>
-        <p class="card-subtitle">Реальные лимиты и скорость генерации вашего аккаунта Google AI Pro.</p>
-
-        <div class="model-list-apple">
-          <!-- Gemini 3.8 Flash -->
-          <div class="model-card-apple selected" onclick="pickModel('Gemini 3.8 Flash High')">
-            <div class="model-top">
-              <div class="model-name">
-                <span>Gemini 3.8 Flash</span>
-                <span class="model-pill">CURRENT</span>
-              </div>
-              <span style="font-size: 12px; font-weight: 600; color: var(--apple-green);">91%</span>
-            </div>
-            <div class="model-details">
-              <span>Сброс через 4 ч. (14:29 UTC)</span>
-              <span>Google DeepMind</span>
-            </div>
-            <div class="quota-track">
-              <div class="quota-fill fill-green" style="width: 91%;"></div>
-            </div>
-            <!-- Effort Tiers -->
-            <div class="tier-picker">
-              <div class="tier-btn" onclick="event.stopPropagation(); pickModel('Gemini 3.8 Flash Low')">Low</div>
-              <div class="tier-btn" onclick="event.stopPropagation(); pickModel('Gemini 3.8 Flash Medium')">Medium</div>
-              <div class="tier-btn active" onclick="event.stopPropagation(); pickModel('Gemini 3.8 Flash High')">High (Thinking)</div>
-            </div>
-          </div>
-
-          <!-- Claude Sonnet 4.6 (Thinking) -->
-          <div class="model-card-apple" onclick="pickModel('Claude Sonnet 4.6 (Thinking)')">
-            <div class="model-top">
-              <div class="model-name">
-                <span>Claude Sonnet 4.6</span>
-                <span class="model-pill" style="color: var(--apple-purple); background: rgba(191,90,242,0.15);">THINKING</span>
-              </div>
-              <span style="font-size: 12px; font-weight: 600; color: var(--apple-blue);">50%</span>
-            </div>
-            <div class="model-details">
-              <span>Сброс 20 октября (42 ч.)</span>
-              <span>Anthropic</span>
-            </div>
-            <div class="quota-track">
-              <div class="quota-fill fill-purple" style="width: 50%;"></div>
-            </div>
-          </div>
-
-          <!-- Claude Opus 4.6 (Thinking) -->
-          <div class="model-card-apple" onclick="pickModel('Claude Opus 4.6 (Thinking)')">
-            <div class="model-top">
-              <div class="model-name">
-                <span>Claude Opus 4.6</span>
-                <span class="model-pill" style="color: var(--apple-purple); background: rgba(191,90,242,0.15);">THINKING</span>
-              </div>
-              <span style="font-size: 12px; font-weight: 600; color: var(--apple-blue);">50%</span>
-            </div>
-            <div class="model-details">
-              <span>Сброс 20 октября (42 ч.)</span>
-              <span>Anthropic</span>
-            </div>
-            <div class="quota-track">
-              <div class="quota-fill fill-purple" style="width: 50%;"></div>
-            </div>
-          </div>
-
-          <!-- Gemini 4 Argon -->
-          <div class="model-card-apple" onclick="pickModel('Gemini 4 Argon')">
-            <div class="model-top">
-              <div class="model-name">
-                <span>Gemini 4 Argon</span>
-                <span class="model-pill" style="color: var(--apple-orange); background: rgba(255,159,10,0.15);">NEXT-GEN</span>
-              </div>
-              <span style="font-size: 12px; font-weight: 600; color: var(--apple-orange);">100%</span>
-            </div>
-            <div class="model-details">
-              <span>Новейший флагман Google</span>
-              <span>DeepMind 2026</span>
-            </div>
-            <div class="quota-track">
-              <div class="quota-fill fill-orange" style="width: 100%;"></div>
-            </div>
-          </div>
-
-          <!-- GPT-OSS 120B -->
-          <div class="model-card-apple" onclick="pickModel('GPT-OSS 120B (Medium)')">
-            <div class="model-top">
-              <div class="model-name">
-                <span>GPT-OSS 120B</span>
-                <span class="model-pill">LOCAL</span>
-              </div>
-              <span style="font-size: 12px; font-weight: 600; color: var(--apple-green);">UNLIMITED</span>
-            </div>
-            <div class="model-details">
-              <span>Открытые веса без квот</span>
-              <span>Medium Effort</span>
-            </div>
-            <div class="quota-track">
-              <div class="quota-fill fill-green" style="width: 100%;"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </main>
-
-    <!-- ==================== TAB: FILES (АРТЕФАКТЫ) ==================== -->
-    <main class="app-view" id="tab-files">
-      <div class="glass-card">
-        <div class="card-header">
-          <div class="card-title">
-            <span class="card-title-icon">📂</span>
-            <span>Артефакты и отчеты</span>
-          </div>
-          <span class="model-pill">BRAIN</span>
-        </div>
-        <p class="card-subtitle">Документы и планы, сгенерированные агентом в рабочей области.</p>
-
-        <div class="bento-grid" style="margin-bottom: 0;">
-          <div class="bento-cell" onclick="triggerAction('/gettask', 'Загрузка task.md...')">
-            <div class="cell-top">
-              <span style="font-size: 22px;">✅</span>
-              <span class="cell-chevron">›</span>
-            </div>
-            <div class="cell-bottom">
-              <div class="cell-label">task.md</div>
-              <div class="cell-desc">Чек-лист задачи</div>
-            </div>
-          </div>
-
-          <div class="bento-cell" onclick="triggerAction('/getplan', 'Загрузка плана...')">
-            <div class="cell-top">
-              <span style="font-size: 22px;">📋</span>
-              <span class="cell-chevron">›</span>
-            </div>
-            <div class="cell-bottom">
-              <div class="cell-label">plan.md</div>
-              <div class="cell-desc">Архитектура</div>
-            </div>
-          </div>
-
-          <div class="bento-cell" onclick="triggerAction('/getwalk', 'Загрузка walkthrough...')">
-            <div class="cell-top">
-              <span style="font-size: 22px;">🚶</span>
-              <span class="cell-chevron">›</span>
-            </div>
-            <div class="cell-bottom">
-              <div class="cell-label">walkthrough.md</div>
-              <div class="cell-desc">Итоги работы</div>
-            </div>
-          </div>
-
-          <div class="bento-cell" onclick="triggerAction('/artifacts', 'Список файлов...')">
-            <div class="cell-top">
-              <span style="font-size: 22px;">📦</span>
-              <span class="cell-chevron">›</span>
-            </div>
-            <div class="cell-bottom">
-              <div class="cell-label">Все файлы</div>
-              <div class="cell-desc">Показать список</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </main>
-
-    <!-- ==================== TAB: SETTINGS (НАСТРОЙКИ) ==================== -->
-    <main class="app-view" id="tab-settings">
-      <div class="glass-card">
-        <div class="card-header">
-          <div class="card-title">
-            <span class="card-title-icon">⚙️</span>
-            <span>Параметры системы</span>
-          </div>
-        </div>
-
-        <div style="display:flex; flex-direction:column; gap:12px;">
-          <div class="bento-cell" style="min-height:auto;" onclick="triggerAction('/turbo', 'Смена режима...')">
-            <div class="cell-top">
-              <div class="cell-label">🛡️ Права выполнения</div>
-              <span class="model-pill">Turbo</span>
-            </div>
-            <div class="cell-desc">Автоматическое принятие команд и терминала</div>
-          </div>
-
-          <div class="bento-cell" style="min-height:auto;" onclick="triggerAction('/new', 'Создание новой сессии...')">
-            <div class="cell-top">
-              <div class="cell-label">✨ Новая сессия (/new)</div>
-              <span class="cell-chevron">›</span>
-            </div>
-            <div class="cell-desc">Очистить историю диалога и сбросить контекст</div>
-          </div>
-
-          <div class="bento-cell" style="min-height:auto;" onclick="triggerAction('/quota', 'Проверка статуса...')">
-            <div class="cell-top">
-              <div class="cell-label">📊 Полная квота (/quota)</div>
-              <span class="cell-chevron">›</span>
-            </div>
-            <div class="cell-desc">Детальный отчет по токенам и лимитам</div>
-          </div>
+        <h3 style="font-size:16px; font-weight:600; margin-bottom:12px;">📂 Документы и артефакты</h3>
+        <div class="item-list-apple" id="artifactsList">
+          <div style="color:var(--text-tertiary); font-size:13px;">Загрузка файлов...</div>
         </div>
       </div>
     </main>
   </div>
 
-  <!-- ==================== APPLE ACTION SHEET MODAL ==================== -->
-  <div class="sheet-overlay" id="actionSheet" onclick="closeSheet(event)">
+  <!-- ==================== MODALS / SHEETS ==================== -->
+  <!-- Workspaces Sheet -->
+  <div class="sheet-overlay" id="workspacesSheet" onclick="closeSheet(event, 'workspacesSheet')">
     <div class="bottom-sheet">
       <div class="sheet-handle"></div>
-      <h3 class="sheet-title" id="sheetTitle">Режим</h3>
-      <p class="sheet-desc" id="sheetSubtitle">Описание задачи</p>
-      
-      <textarea class="sheet-textarea" id="sheetInput" placeholder="Введите подробное описание..."></textarea>
-      
-      <!-- Quick suggestion chips -->
-      <div class="quick-chips" id="sheetChips">
-        <div class="quick-chip" onclick="applyChip('Сделай полный рефакторинг API и добавь тесты')">⚡ Рефакторинг API</div>
-        <div class="quick-chip" onclick="applyChip('Исправь все ошибки сборки и типы')">🛠️ Починить ошибки</div>
-        <div class="quick-chip" onclick="applyChip('Спроектируй систему авторизации с JWT')">🔐 Авторизация JWT</div>
-      </div>
-
-      <div class="sheet-actions">
-        <button class="btn-apple btn-secondary" onclick="closeSheetDirect()">Отмена</button>
-        <button class="btn-apple btn-primary" onclick="submitSheet()">Запустить</button>
-      </div>
+      <h3 style="font-size:18px; font-weight:700; margin-bottom:12px;">Выберите проект</h3>
+      <div class="item-list-apple" id="wsListItems"></div>
     </div>
   </div>
 
-  <!-- ==================== APPLE BOTTOM TABBAR ==================== -->
+  <!-- Threads Sheet -->
+  <div class="sheet-overlay" id="threadsSheet" onclick="closeSheet(event, 'threadsSheet')">
+    <div class="bottom-sheet">
+      <div class="sheet-handle"></div>
+      <h3 style="font-size:18px; font-weight:700; margin-bottom:12px;">Диалоги в проекте</h3>
+      <div class="item-list-apple" id="threadsListItems"></div>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
   <nav class="apple-tabbar">
     <div class="tabbar-container">
-      <div class="apple-tab active" onclick="navigateTab('control', this)">
-        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/></svg>
-        <span>Пульт</span>
+      <div class="apple-tab active" onclick="navigateTab('chat', this)">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span>Чат</span>
       </div>
-      <div class="apple-tab" onclick="navigateTab('models', this)">
+      <div class="apple-tab" onclick="navigateTab('screen', this)">
+        <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        <span>Экран</span>
+      </div>
+      <div class="apple-tab" id="tabNavModels" onclick="navigateTab('models', this)">
         <svg viewBox="0 0 24 24"><path d="M12 2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2 2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/><path d="M4 11a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-7z"/><circle cx="9" cy="15" r="1.5"/><circle cx="15" cy="15" r="1.5"/></svg>
         <span>Модели</span>
       </div>
-      <div class="apple-tab" onclick="navigateTab('files', this)">
+      <div class="apple-tab" onclick="navigateTab('control', this)">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/></svg>
+        <span>Пульт</span>
+      </div>
+      <div class="apple-tab" onclick="navigateTab('artifacts', this)">
         <svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
         <span>Файлы</span>
-      </div>
-      <div class="apple-tab" onclick="navigateTab('settings', this)">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        <span>Опции</span>
       </div>
     </div>
   </nav>
 
   <script>
-    const BOT_USERNAME = "reb0oornAG_bot";
     const tg = window.Telegram?.WebApp;
     if (tg) {
       tg.ready();
       tg.expand();
-      try { tg.enableClosingConfirmation(); } catch (e) {}
+      try { tg.enableClosingConfirmation(); } catch (_) {}
     }
 
-    // Apple Haptics
-    function appleHaptic(type = 'light') {
+    function haptic(type = 'light') {
       try {
         if (tg?.HapticFeedback) {
-          if (type === 'success' || type === 'error' || type === 'warning') {
-            tg.HapticFeedback.notificationOccurred(type);
-          } else {
-            tg.HapticFeedback.impactOccurred(type);
-          }
+          if (type === 'success' || type === 'error') tg.HapticFeedback.notificationOccurred(type);
+          else tg.HapticFeedback.impactOccurred(type);
         }
       } catch (_) {}
     }
 
-    // Dynamic Island Toast
-    let toastTimer = null;
-    function showAppleBanner(text, icon = '⚡') {
-      const banner = document.getElementById('appleToast');
-      document.getElementById('toastMsg').textContent = text;
-      document.getElementById('toastEmoji').textContent = icon;
-      banner.classList.add('visible');
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => {
-        banner.classList.remove('visible');
-      }, 2400);
-    }
-
-    // Base64URL helper
-    function toBase64Url(str) {
-      return btoa(unescape(encodeURIComponent(str)))
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/=+$/, '');
-    }
-
-    // Guaranteed Cross-Platform Action Dispatcher
-    async function triggerAction(command, feedback = 'Команда выполняется...') {
-      appleHaptic('medium');
-      showAppleBanner(feedback, '🚀');
-
-      const cmd = command.trim();
-
-      // 1. Try native WebApp sendData (Active when opened from chat keyboard button)
-      let sentSuccessfully = false;
-      try {
-        if (tg && typeof tg.sendData === 'function') {
-          tg.sendData(cmd);
-          sentSuccessfully = true;
-          // Smooth closing after haptic feedback
-          setTimeout(() => {
-            try { tg.close(); } catch (_) {}
-          }, 250);
-          return;
-        }
-      } catch (err) {
-        console.log('sendData not available in this mode, using fallback:', err);
-      }
-
-      // 2. Fallback via Telegram Deep Link (Active when opened from Menu Button)
-      if (!sentSuccessfully) {
-        let deepPayload = '';
-        if (cmd === '/screenshot' || cmd === 'screenshot') deepPayload = 'screenshot';
-        else if (cmd === '/latest' || cmd === 'latest') deepPayload = 'latest';
-        else if (cmd === '/turbo' || cmd === 'turbo') deepPayload = 'turbo';
-        else if (cmd === '/quota' || cmd === 'quota') deepPayload = 'quota';
-        else if (cmd === '/gettask' || cmd === 'gettask') deepPayload = 'gettask';
-        else if (cmd === '/getplan' || cmd === 'getplan') deepPayload = 'getplan';
-        else if (cmd === '/getwalk' || cmd === 'getwalk') deepPayload = 'getwalk';
-        else if (cmd === '/artifacts' || cmd === 'artifacts') deepPayload = 'artifacts';
-        else if (cmd === '/new' || cmd === 'new') deepPayload = 'new';
-        else if (cmd.startsWith('/model ')) {
-          const mName = cmd.replace(/^\/model\s+/, '').replace(/\s+/g, '_');
-          deepPayload = 'model_' + mName;
-        } else if (cmd.startsWith('/plan ')) {
-          const pText = cmd.replace(/^\/plan\s+/, '');
-          deepPayload = 'plan_' + toBase64Url(pText);
-        } else if (cmd.startsWith('/goal ')) {
-          const gText = cmd.replace(/^\/goal\s+/, '');
-          deepPayload = 'goal_' + toBase64Url(gText);
-        } else {
-          deepPayload = 'cmd_' + toBase64Url(cmd);
-        }
-
-        const deepLink = `https://t.me/${BOT_USERNAME}?start=${encodeURIComponent(deepPayload)}`;
-        try {
-          if (tg && typeof tg.openTelegramLink === 'function') {
-            tg.openTelegramLink(deepLink);
-          } else {
-            window.location.href = deepLink;
-          }
-        } catch (e) {
-          console.error('DeepLink transition failed:', e);
-        }
-      }
-    }
-
-    // Navigation
     function navigateTab(tabId, el) {
-      appleHaptic('light');
+      haptic('light');
       document.querySelectorAll('.apple-tab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
-      
-      el.classList.add('active');
-      const target = document.getElementById('tab-' + tabId);
+      if (el) el.classList.add('active');
+      const target = document.getElementById('view-' + tabId);
       if (target) target.classList.add('active');
+
+      if (tabId === 'screen') refreshScreenshot();
+      if (tabId === 'artifacts') loadArtifacts();
     }
 
-    // Send Direct Prompt
-    function sendDirectPrompt() {
-      const field = document.getElementById('mainPrompt');
-      const text = field.value.trim();
+    // --- API CLIENT ---
+    let currentTurboState = true;
+    let pollInterval = null;
+
+    async function apiReq(endpoint, method = 'GET', body = null) {
+      try {
+        const opts = { method, headers: { 'Content-Type': 'application/json' } };
+        if (body) opts.body = JSON.stringify(body);
+        const res = await fetch(endpoint, opts);
+        return await res.json();
+      } catch (e) {
+        console.error('API Error:', endpoint, e);
+        return null;
+      }
+    }
+
+    // Load Live Status
+    async function loadStatus() {
+      const data = await apiReq('/api/status');
+      if (data && data.ok) {
+        if (data.currentModel) {
+          document.getElementById('islandModelBadge').textContent = '⚡ ' + data.currentModel.split(' ')[0] + ' ' + (data.currentModel.split(' ')[1] || '');
+        }
+        if (data.permissionMode) {
+          currentTurboState = data.permissionMode.id === 'turbo';
+          const badge = document.getElementById('turboBadge');
+          if (badge) {
+            badge.textContent = currentTurboState ? 'ON' : 'OFF';
+            badge.style.color = currentTurboState ? 'var(--apple-green)' : 'var(--apple-red)';
+          }
+        }
+      }
+    }
+
+    // Load Chat Messages
+    async function loadChatMessages() {
+      const data = await apiReq('/api/chat/messages');
+      if (data && data.ok && Array.isArray(data.messages)) {
+        renderMessages(data.messages);
+      }
+    }
+
+    function formatMarkdown(text) {
+      if (!text) return '';
+      let escaped = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      // Code blocks
+      escaped = escaped.replace(/```([a-z0-9_-]*)\n([\s\S]*?)```/gi, '<pre><code>$2</code></pre>');
+      // Inline code
+      escaped = escaped.replace(/`([^`\n]+)`/g, '<code>$1</code>');
+      // Bold
+      escaped = escaped.replace(/\*\*([^\*\n]+?)\*\*/g, '<b>$1</b>');
+      // Newlines
+      escaped = escaped.replace(/\n/g, '<br>');
+      return escaped;
+    }
+
+    function renderMessages(messages) {
+      const list = document.getElementById('messagesList');
+      if (!messages || messages.length === 0) return;
+
+      let html = '';
+      messages.forEach(m => {
+        const isUser = m.role === 'user';
+        const bubbleClass = isUser ? 'msg-user' : 'msg-assistant';
+        const formatted = isUser ? m.text.replace(/\n/g, '<br>') : formatMarkdown(m.text);
+        html += `
+          <div class="msg-bubble ${bubbleClass}">
+            ${formatted}
+          </div>
+        `;
+      });
+
+      list.innerHTML = html;
+      list.scrollTop = list.scrollHeight;
+    }
+
+    // Send Message
+    async function sendChatMessage() {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
       if (!text) return;
-      
-      appleHaptic('success');
-      showAppleBanner('Задача передана агенту', '✨');
-      field.value = '';
-      triggerAction(text, 'Отправляем задачу агенту...');
-    }
 
-    // Pick Model
-    function pickModel(modelName) {
-      appleHaptic('success');
-      showAppleBanner(`Выбрана: ${modelName}`, '🤖');
-      document.querySelectorAll('.model-card-apple').forEach(c => c.classList.remove('selected'));
-      if (event && event.currentTarget) {
-        event.currentTarget.classList.add('selected');
-      }
-      document.getElementById('islandModelBadge').innerHTML = `<span>⚡ ${modelName.split(' ')[0]} ${modelName.split(' ')[1] || ''}</span>`;
-      triggerAction(`/model ${modelName}`, `Переключение на ${modelName}...`);
-    }
-
-    // Action Sheets
-    let currentSheetMode = 'plan';
-    function openSheet(mode) {
-      appleHaptic('medium');
-      currentSheetMode = mode;
-      const overlay = document.getElementById('actionSheet');
-      const title = document.getElementById('sheetTitle');
-      const subtitle = document.getElementById('sheetSubtitle');
-      const input = document.getElementById('sheetInput');
-
-      if (mode === 'goal') {
-        title.textContent = '🎯 Goal Mode (Автономная цель)';
-        subtitle.textContent = 'Задайте цель. Агент будет работать самостоятельно без пауз до полного достижения результата.';
-        input.placeholder = 'Пример: Проведи аудит безопасности и устрани уязвимости';
-      } else {
-        title.textContent = '📋 Plan Mode (Архитектурный план)';
-        subtitle.textContent = 'Опишите задачу. Агент составит пошаговый план и декомпозицию перед кодингом.';
-        input.placeholder = 'Пример: Спроектируй систему авторизации с JWT и Refresh-токенами';
-      }
-
+      haptic('medium');
       input.value = '';
-      overlay.classList.add('active');
-      setTimeout(() => input.focus(), 250);
-    }
 
-    function applyChip(text) {
-      appleHaptic('light');
-      document.getElementById('sheetInput').value = text;
-    }
+      // Optimistically append user message
+      const list = document.getElementById('messagesList');
+      const userBubble = document.createElement('div');
+      userBubble.className = 'msg-bubble msg-user';
+      userBubble.innerHTML = text.replace(/\n/g, '<br>');
+      list.appendChild(userBubble);
+      list.scrollTop = list.scrollHeight;
 
-    function closeSheet(e) {
-      if (e.target.id === 'actionSheet') {
-        closeSheetDirect();
+      // Show typing indicator
+      document.getElementById('typingIndicator').classList.add('active');
+
+      const res = await apiReq('/api/chat/send', 'POST', { text });
+      if (res && res.ok) {
+        // Poll for updates
+        let attempts = 0;
+        const check = setInterval(async () => {
+          attempts++;
+          await loadChatMessages();
+          if (attempts > 15) {
+            clearInterval(check);
+            document.getElementById('typingIndicator').classList.remove('active');
+          }
+        }, 2000);
       }
     }
 
-    function closeSheetDirect() {
-      appleHaptic('light');
-      document.getElementById('actionSheet').classList.remove('active');
+    // Screenshot
+    function refreshScreenshot() {
+      haptic('light');
+      const img = document.getElementById('screenImg');
+      if (img) img.src = '/api/screenshot?t=' + Date.now();
     }
 
-    function submitSheet() {
-      const text = document.getElementById('sheetInput').value.trim();
-      if (!text) return;
-      closeSheetDirect();
-      if (currentSheetMode === 'goal') {
-        triggerAction('/goal ' + text, '🎯 Запуск автономной цели...');
+    function expandImage(src) {
+      window.open(src, '_blank');
+    }
+
+    // Switch Model
+    async function switchModel(modelName) {
+      haptic('success');
+      document.querySelectorAll('.model-card').forEach(c => c.classList.remove('active'));
+      if (event && event.currentTarget) event.currentTarget.classList.add('active');
+      document.getElementById('islandModelBadge').textContent = '⚡ ' + modelName.split(' ')[0];
+      await apiReq('/api/model', 'POST', { model: modelName });
+    }
+
+    // Toggle Turbo
+    async function toggleTurbo() {
+      haptic('medium');
+      currentTurboState = !currentTurboState;
+      const mode = currentTurboState ? 'turbo' : 'default';
+      const badge = document.getElementById('turboBadge');
+      if (badge) {
+        badge.textContent = currentTurboState ? 'ON' : 'OFF';
+        badge.style.color = currentTurboState ? 'var(--apple-green)' : 'var(--apple-red)';
+      }
+      await apiReq('/api/turbo', 'POST', { mode });
+    }
+
+    // Action Prompts (Plan & Goal)
+    function openActionPrompt(type) {
+      const promptText = prompt(type === 'goal' ? '🎯 Введите цель для Goal Mode:' : '📋 Введите задачу для Plan Mode:');
+      if (promptText && promptText.trim()) {
+        const cmd = (type === 'goal' ? '/goal ' : '/plan ') + promptText.trim();
+        navigateTab('chat', document.querySelector('.apple-tab'));
+        document.getElementById('chatInput').value = cmd;
+        sendChatMessage();
+      }
+    }
+
+    // New Chat
+    async function createNewChat() {
+      if (confirm('Начать новый диалог? Текущий контекст будет сброшен.')) {
+        haptic('success');
+        await apiReq('/api/threads/new', 'POST');
+        setTimeout(() => loadChatMessages(), 1000);
+      }
+    }
+
+    // Workspaces Sheet
+    async function openWorkspacesSheet() {
+      haptic('medium');
+      const data = await apiReq('/api/workspaces');
+      const container = document.getElementById('wsListItems');
+      if (data && data.workspaces) {
+        let html = '';
+        data.workspaces.forEach(ws => {
+          html += `<div class="item-row-apple" onclick="selectWorkspace('${ws}')"><span>📁 ${ws}</span><span>›</span></div>`;
+        });
+        container.innerHTML = html;
+      }
+      document.getElementById('workspacesSheet').classList.add('active');
+    }
+
+    async function selectWorkspace(ws) {
+      haptic('success');
+      document.getElementById('activeWorkspaceLabel').textContent = ws;
+      document.getElementById('workspacesSheet').classList.remove('active');
+      await apiReq('/api/workspaces/switch', 'POST', { workspace: ws });
+      setTimeout(() => loadChatMessages(), 1500);
+    }
+
+    // Threads Sheet
+    async function openThreadsSheet() {
+      haptic('medium');
+      const data = await apiReq('/api/threads');
+      const container = document.getElementById('threadsListItems');
+      if (data && data.threadGroups) {
+        let html = '';
+        data.threadGroups.forEach(g => {
+          if (Array.isArray(g.threads)) {
+            g.threads.forEach(t => {
+              const name = t.name || t.id || 'Chat';
+              html += `<div class="item-row-apple" onclick="selectThread('${name}')"><span>💬 ${name}</span><span>›</span></div>`;
+            });
+          }
+        });
+        container.innerHTML = html || '<div style="color:var(--text-tertiary); padding:10px;">Нет сохраненных тредов</div>';
+      }
+      document.getElementById('threadsSheet').classList.add('active');
+    }
+
+    async function selectThread(th) {
+      haptic('success');
+      document.getElementById('threadsSheet').classList.remove('active');
+      await apiReq('/api/threads/switch', 'POST', { thread: th });
+      setTimeout(() => loadChatMessages(), 1500);
+    }
+
+    function closeSheet(e, id) {
+      if (e.target.id === id) {
+        document.getElementById(id).classList.remove('active');
+      }
+    }
+
+    // Load Artifacts
+    async function loadArtifacts() {
+      const data = await apiReq('/api/artifacts');
+      const container = document.getElementById('artifactsList');
+      if (data && data.artifacts && data.artifacts.length > 0) {
+        let html = '';
+        data.artifacts.forEach(a => {
+          html += `
+            <div class="glass-card" style="margin-bottom:10px;">
+              <h4 style="font-size:14px; color:var(--apple-blue); margin-bottom:8px;">📄 ${a.name}</h4>
+              <div style="font-size:12px; color:var(--text-secondary); max-height:160px; overflow-y:auto; line-height:1.4;">
+                ${formatMarkdown(a.content)}
+              </div>
+            </div>
+          `;
+        });
+        container.innerHTML = html;
       } else {
-        triggerAction('/plan ' + text, '📋 Генерация плана...');
+        container.innerHTML = '<div style="color:var(--text-tertiary); font-size:13px;">Артефакты не найдены в текущем каталоге.</div>';
       }
     }
 
-    // Enter in prompt
-    document.getElementById('mainPrompt').addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') {
+    // Support Enter in Chat Input
+    document.getElementById('chatInput').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
-        sendDirectPrompt();
+        sendChatMessage();
       }
     });
+
+    // Initial setup
+    loadStatus();
+    loadChatMessages();
+    setInterval(loadChatMessages, 5000);
   </script>
 </body>
 </html>
