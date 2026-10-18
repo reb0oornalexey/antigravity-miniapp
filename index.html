@@ -1004,7 +1004,7 @@
         <p class="card-subtitle">Документы и планы, сгенерированные агентом в рабочей области.</p>
 
         <div class="bento-grid" style="margin-bottom: 0;">
-          <div class="bento-cell" onclick="triggerAction('cmd_L2dldHRhc2s=', 'Загрузка task.md...')">
+          <div class="bento-cell" onclick="triggerAction('/gettask', 'Загрузка task.md...')">
             <div class="cell-top">
               <span style="font-size: 22px;">✅</span>
               <span class="cell-chevron">›</span>
@@ -1015,7 +1015,7 @@
             </div>
           </div>
 
-          <div class="bento-cell" onclick="triggerAction('cmd_L2dldHBsYW4=', 'Загрузка плана...')">
+          <div class="bento-cell" onclick="triggerAction('/getplan', 'Загрузка плана...')">
             <div class="cell-top">
               <span style="font-size: 22px;">📋</span>
               <span class="cell-chevron">›</span>
@@ -1026,7 +1026,7 @@
             </div>
           </div>
 
-          <div class="bento-cell" onclick="triggerAction('cmd_L2dldHdhbGs=', 'Загрузка walkthrough...')">
+          <div class="bento-cell" onclick="triggerAction('/getwalk', 'Загрузка walkthrough...')">
             <div class="cell-top">
               <span style="font-size: 22px;">🚶</span>
               <span class="cell-chevron">›</span>
@@ -1037,7 +1037,7 @@
             </div>
           </div>
 
-          <div class="bento-cell" onclick="triggerAction('files', 'Список файлов...')">
+          <div class="bento-cell" onclick="triggerAction('/artifacts', 'Список файлов...')">
             <div class="cell-top">
               <span style="font-size: 22px;">📦</span>
               <span class="cell-chevron">›</span>
@@ -1062,7 +1062,7 @@
         </div>
 
         <div style="display:flex; flex-direction:column; gap:12px;">
-          <div class="bento-cell" style="min-height:auto;" onclick="triggerAction('turbo', 'Смена режима...')">
+          <div class="bento-cell" style="min-height:auto;" onclick="triggerAction('/turbo', 'Смена режима...')">
             <div class="cell-top">
               <div class="cell-label">🛡️ Права выполнения</div>
               <span class="model-pill">Turbo</span>
@@ -1070,7 +1070,7 @@
             <div class="cell-desc">Автоматическое принятие команд и терминала</div>
           </div>
 
-          <div class="bento-cell" style="min-height:auto;" onclick="triggerAction('cmd_L25ldw==', 'Создание новой сессии...')">
+          <div class="bento-cell" style="min-height:auto;" onclick="triggerAction('/new', 'Создание новой сессии...')">
             <div class="cell-top">
               <div class="cell-label">✨ Новая сессия (/new)</div>
               <span class="cell-chevron">›</span>
@@ -1078,7 +1078,7 @@
             <div class="cell-desc">Очистить историю диалога и сбросить контекст</div>
           </div>
 
-          <div class="bento-cell" style="min-height:auto;" onclick="triggerAction('quota', 'Проверка статуса...')">
+          <div class="bento-cell" style="min-height:auto;" onclick="triggerAction('/quota', 'Проверка статуса...')">
             <div class="cell-top">
               <div class="cell-label">📊 Полная квота (/quota)</div>
               <span class="cell-chevron">›</span>
@@ -1179,39 +1179,55 @@
     }
 
     // Guaranteed Cross-Platform Action Dispatcher
-    async function triggerAction(payloadOrCmd, feedback = 'Команда выполняется...') {
+    async function triggerAction(command, feedback = 'Команда выполняется...') {
       appleHaptic('medium');
       showAppleBanner(feedback, '🚀');
 
-      // Prepare deep link payload
-      let deepPayload = payloadOrCmd;
-      let rawCmd = '/' + payloadOrCmd;
+      const cmd = command.trim();
 
-      if (payloadOrCmd.startsWith('/')) {
-        rawCmd = payloadOrCmd;
-        deepPayload = payloadOrCmd.substring(1);
-      }
-
-      // Check for custom commands
-      if (payloadOrCmd.startsWith('cmd_') || payloadOrCmd.startsWith('plan_') || payloadOrCmd.startsWith('goal_') || payloadOrCmd.startsWith('model_')) {
-        deepPayload = payloadOrCmd;
-      }
-
-      // 1. Try native WebApp sendData (works 100% when opened from keyboard)
-      let sentViaData = false;
+      // 1. Try native WebApp sendData (Active when opened from chat keyboard button)
+      let sentSuccessfully = false;
       try {
         if (tg && typeof tg.sendData === 'function') {
-          tg.sendData(rawCmd);
-          sentViaData = true;
+          tg.sendData(cmd);
+          sentSuccessfully = true;
+          // Smooth closing after haptic feedback
+          setTimeout(() => {
+            try { tg.close(); } catch (_) {}
+          }, 250);
+          return;
         }
       } catch (err) {
-        console.warn('sendData unsupported in this mode:', err);
+        console.log('sendData not available in this mode, using fallback:', err);
       }
 
-      // 2. Open via Telegram Deep Link (works 100% when opened from Menu Button)
-      setTimeout(() => {
+      // 2. Fallback via Telegram Deep Link (Active when opened from Menu Button)
+      if (!sentSuccessfully) {
+        let deepPayload = '';
+        if (cmd === '/screenshot' || cmd === 'screenshot') deepPayload = 'screenshot';
+        else if (cmd === '/latest' || cmd === 'latest') deepPayload = 'latest';
+        else if (cmd === '/turbo' || cmd === 'turbo') deepPayload = 'turbo';
+        else if (cmd === '/quota' || cmd === 'quota') deepPayload = 'quota';
+        else if (cmd === '/gettask' || cmd === 'gettask') deepPayload = 'gettask';
+        else if (cmd === '/getplan' || cmd === 'getplan') deepPayload = 'getplan';
+        else if (cmd === '/getwalk' || cmd === 'getwalk') deepPayload = 'getwalk';
+        else if (cmd === '/artifacts' || cmd === 'artifacts') deepPayload = 'artifacts';
+        else if (cmd === '/new' || cmd === 'new') deepPayload = 'new';
+        else if (cmd.startsWith('/model ')) {
+          const mName = cmd.replace(/^\/model\s+/, '').replace(/\s+/g, '_');
+          deepPayload = 'model_' + mName;
+        } else if (cmd.startsWith('/plan ')) {
+          const pText = cmd.replace(/^\/plan\s+/, '');
+          deepPayload = 'plan_' + toBase64Url(pText);
+        } else if (cmd.startsWith('/goal ')) {
+          const gText = cmd.replace(/^\/goal\s+/, '');
+          deepPayload = 'goal_' + toBase64Url(gText);
+        } else {
+          deepPayload = 'cmd_' + toBase64Url(cmd);
+        }
+
+        const deepLink = `https://t.me/${BOT_USERNAME}?start=${encodeURIComponent(deepPayload)}`;
         try {
-          const deepLink = `https://t.me/${BOT_USERNAME}?start=${encodeURIComponent(deepPayload)}`;
           if (tg && typeof tg.openTelegramLink === 'function') {
             tg.openTelegramLink(deepLink);
           } else {
@@ -1220,7 +1236,7 @@
         } catch (e) {
           console.error('DeepLink transition failed:', e);
         }
-      }, sentViaData ? 300 : 120);
+      }
     }
 
     // Navigation
@@ -1243,8 +1259,7 @@
       appleHaptic('success');
       showAppleBanner('Задача передана агенту', '✨');
       field.value = '';
-      const b64 = toBase64Url(text);
-      triggerAction(`cmd_${b64}`, 'Отправляем задачу в Antigravity...');
+      triggerAction(text, 'Отправляем задачу агенту...');
     }
 
     // Pick Model
@@ -1256,8 +1271,7 @@
         event.currentTarget.classList.add('selected');
       }
       document.getElementById('islandModelBadge').innerHTML = `<span>⚡ ${modelName.split(' ')[0]} ${modelName.split(' ')[1] || ''}</span>`;
-      const clean = modelName.replace(/\s+/g, '_');
-      triggerAction(`model_${clean}`, `Переключение на ${modelName}...`);
+      triggerAction(`/model ${modelName}`, `Переключение на ${modelName}...`);
     }
 
     // Action Sheets
@@ -1305,11 +1319,10 @@
       const text = document.getElementById('sheetInput').value.trim();
       if (!text) return;
       closeSheetDirect();
-      const b64 = toBase64Url(text);
       if (currentSheetMode === 'goal') {
-        triggerAction(`goal_${b64}`, '🎯 Запуск автономной цели...');
+        triggerAction('/goal ' + text, '🎯 Запуск автономной цели...');
       } else {
-        triggerAction(`plan_${b64}`, '📋 Генерация плана...');
+        triggerAction('/plan ' + text, '📋 Генерация плана...');
       }
     }
 
