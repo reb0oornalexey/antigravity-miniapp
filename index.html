@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Antigravity Suite</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      --bg: #000000;
+      --card-bg: rgba(28, 28, 30, 0.72);
+      --card-border: rgba(255, 255, 255, 0.1);
+      --text: #FFFFFF;
+      --text-secondary: #8E8E93;
+      --text-tertiary: #636366;
+      --accent: #007AFF;
+      --accent-purple: #AF52DE;
+      --accent-green: #34C759;
+      --accent-orange: #FF9500;
+      --accent-red: #FF3B30;
+      --card-hover: rgba(255, 255, 255, 0.06);
+      --card-active: rgba(255, 255, 255, 0.12);
+      --separator: rgba(255, 255, 255, 0.08);
+      --tab-bg: rgba(22, 22, 24, 0.85);
+    }
+
+    @media (prefers-color-scheme: light) {
+      body.auto-theme {
+        --bg: #F2F2F7;
+        --card-bg: rgba(255, 255, 255, 0.78);
+        --card-border: rgba(0, 0, 0, 0.06);
+        --text: #000000;
+        --text-secondary: #8E8E93;
+        --text-tertiary: #AEAEB2;
+        --card-hover: rgba(0, 0, 0, 0.03);
+        --card-active: rgba(0, 0, 0, 0.08);
+        --separator: rgba(0, 0, 0, 0.06);
+        --tab-bg: rgba(245, 245, 247, 0.85);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding-top: max(16px, env(safe-area-inset-top));
+      padding-bottom: max(90px, calc(env(safe-area-inset-bottom) + 80px));
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Ambient Glow */
+    .ambient-glow {
+      position: fixed;
+      top: -120px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 320px;
+      height: 320px;
+      background: radial-gradient(circle, rgba(0, 122, 255, 0.25) 0%, rgba(175, 82, 222, 0.15) 50%, transparent 70%);
+      filter: blur(50px);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-top: 4px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #007AFF 0%, #AF52DE 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 20px rgba(0, 122, 255, 0.3);
+    }
+
+    .brand-icon svg {
+      width: 24px;
+      height: 24px;
+      fill: #fff;
+    }
+
+    .brand-info h1 {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      line-height: 1.2;
+    }
+
+    .brand-info span {
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      background: rgba(52, 199, 89, 0.12);
+      border: 1px solid rgba(52, 199, 89, 0.25);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent-green);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      box-shadow: 0 0 8px var(--accent-green);
+      animation: pulse 2s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
+
+    /* Input Card */
+    .prompt-box {
+      background: var(--card-bg);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 14px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+    }
+
+    .prompt-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .prompt-inner {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+    }
+
+    .prompt-input {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-size: 15px;
+      font-family: inherit;
+      outline: none;
+      resize: none;
+      min-height: 44px;
+      max-height: 120px;
+      transition: border-color 0.2s, background 0.2s;
+      user-select: text;
+      -webkit-user-select: text;
+    }
+
+    .prompt-input:focus {
+      border-color: var(--accent);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .prompt-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: var(--accent);
+      border: none;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s;
+      flex-shrink: 0;
+    }
+
+    .prompt-btn:active {
+      transform: scale(0.92);
+      background: #0062cc;
+    }
+
+    .prompt-btn svg {
+      width: 20px;
+      height: 20px;
+      stroke: #fff;
+      stroke-width: 2.5;
+      fill: none;
+    }
+
+    /* Section Titles */
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-secondary);
+      margin: 18px 4px 10px 4px;
+    }
+
+    /* Grid Controls */
+    .action-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .action-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+      cursor: pointer;
+      transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s, border-color 0.2s;
+    }
+
+    .action-card:active {
+      transform: scale(0.96);
+      background: var(--card-active);
+    }
+
+    .action-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .action-icon.blue { background: rgba(0, 122, 255, 0.15); color: #0A84FF; }
+    .action-icon.purple { background: rgba(175, 82, 222, 0.15); color: #BF5AF2; }
+    .action-icon.green { background: rgba(52, 199, 89, 0.15); color: #32D74B; }
+    .action-icon.orange { background: rgba(255, 149, 0, 0.15); color: #FF9F0A; }
+    .action-icon.red { background: rgba(255, 59, 48, 0.15); color: #FF453A; }
+
+    .action-icon svg {
+      width: 22px;
+      height: 22px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .action-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .action-subtitle {
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-weight: 400;
+      line-height: 1.3;
+    }
+
+    /* List Rows (Apple Settings style) */
+    .list-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .list-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: background 0.15s;
+      position: relative;
+    }
+
+    .list-row:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 56px;
+      right: 0;
+      bottom: 0;
+      height: 1px;
+      background: var(--separator);
+    }
+
+    .list-row:active {
+      background: var(--card-active);
+    }
+
+    .row-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .row-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .row-icon.blue { background: #007AFF; color: #fff; }
+    .row-icon.purple { background: #AF52DE; color: #fff; }
+    .row-icon.green { background: #34C759; color: #fff; }
+    .row-icon.orange { background: #FF9500; color: #fff; }
+    .row-icon.gray { background: #8E8E93; color: #fff; }
+
+    .row-icon svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      stroke-width: 2.2;
+      fill: none;
+    }
+
+    .row-info h4 {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.2px;
+    }
+
+    .row-info p {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .row-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    .row-chevron svg {
+      width: 14px;
+      height: 14px;
+      stroke: var(--text-tertiary);
+      stroke-width: 2.5;
+      fill: none;
+    }
+
+    /* Switch toggle */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 48px;
+      height: 28px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(255, 255, 255, 0.16);
+      transition: .25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      border-radius: 34px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 24px;
+      width: 24px;
+      left: 2px;
+      bottom: 2px;
+      background-color: white;
+      transition: .25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      border-radius: 50%;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+    }
+
+    input:checked + .slider {
+      background-color: var(--accent-green);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    /* Model Cards */
+    .model-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.2s, background 0.2s;
+    }
+
+    .model-card:active {
+      transform: scale(0.97);
+      background: var(--card-active);
+    }
+
+    .model-card.active {
+      border-color: var(--accent);
+      background: rgba(0, 122, 255, 0.1);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-left: 6px;
+    }
+
+    .badge.pro { background: rgba(175, 82, 222, 0.25); color: #D087F7; }
+    .badge.fast { background: rgba(52, 199, 89, 0.25); color: #32D74B; }
+    .badge.think { background: rgba(0, 122, 255, 0.25); color: #58A6FF; }
+
+    /* Bottom Navigation Tab Bar (Apple style) */
+    .tab-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: max(72px, calc(env(safe-area-inset-bottom) + 56px));
+      padding-bottom: env(safe-area-inset-bottom);
+      background: var(--tab-bg);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border-top: 1px solid var(--separator);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .tab-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      color: var(--text-tertiary);
+      font-size: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 70px;
+      transition: color 0.15s, transform 0.15s;
+    }
+
+    .tab-item.active {
+      color: var(--accent);
+    }
+
+    .tab-item:active {
+      transform: scale(0.9);
+    }
+
+    .tab-item svg {
+      width: 22px;
+      height: 22px;
+      stroke: currentColor;
+      stroke-width: 2.2;
+      fill: none;
+    }
+
+    /* Views container */
+    .view-content {
+      display: none;
+      animation: fadeIn 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .view-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      top: max(20px, env(safe-area-inset-top));
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      background: rgba(44, 44, 46, 0.95);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: white;
+      padding: 10px 18px;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+      z-index: 1000;
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body class="auto-theme">
+  <div class="ambient-glow"></div>
+
+  <div id="toast" class="toast">
+    <span id="toastIcon">✨</span>
+    <span id="toastText">Команда отправлена</span>
+  </div>
+
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div class="brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <div class="brand-info">
+          <h1>Antigravity</h1>
+          <span id="headerSub">Remote Agent Control</span>
+        </div>
+      </div>
+      <div class="status-pill">
+        <span class="status-dot"></span>
+        <span id="statusLabel">9333 Online</span>
+      </div>
+    </header>
+
+    <!-- VIEW 1: ПУЛЬТ (Dashboard) -->
+    <div id="view-dashboard" class="view-content active">
+      <!-- Quick Prompt Input -->
+      <div class="prompt-box">
+        <div class="prompt-label">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+          Отправить задачу агенту
+        </div>
+        <div class="prompt-inner">
+          <textarea id="promptInput" class="prompt-input" rows="1" placeholder="Напишите задачу или код..."></textarea>
+          <button class="prompt-btn" onclick="sendPrompt()">
+            <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Actions Grid -->
+      <div class="section-title">Быстрые действия</div>
+      <div class="action-grid">
+        <div class="action-card" onclick="sendCommand('/screenshot', '📸 Делаем скриншот...')">
+          <div class="action-icon blue">
+            <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          </div>
+          <div>
+            <div class="action-title">Скриншот</div>
+            <div class="action-subtitle">Снимок экрана IDE</div>
+          </div>
+        </div>
+
+        <div class="action-card" onclick="sendCommand('/latest', '💬 Запрашиваем ответ...')">
+          <div class="action-icon purple">
+            <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          </div>
+          <div>
+            <div class="action-title">Ответ</div>
+            <div class="action-subtitle">Последнее сообщение</div>
+          </div>
+        </div>
+
+        <div class="action-card" onclick="sendCommand('/new', '➕ Создаем новый диалог...')">
+          <div class="action-icon green">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          </div>
+          <div>
+            <div class="action-title">Новый чат</div>
+            <div class="action-subtitle">Чистая сессия агента</div>
+          </div>
+        </div>
+
+        <div class="action-card" onclick="sendCommand('/stop', '🛑 Останавливаем агента...')">
+          <div class="action-icon red">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
+          </div>
+          <div>
+            <div class="action-title">Остановить</div>
+            <div class="action-subtitle">Прервать выполнение</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Autonomous Modes -->
+      <div class="section-title">Автономные режимы</div>
+      <div class="list-card">
+        <div class="list-row" onclick="sendCommand('/turbo', '🚀 Режим Turbo переключен')">
+          <div class="row-left">
+            <div class="row-icon purple">
+              <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            </div>
+            <div class="row-info">
+              <h4>Turbo Mode</h4>
+              <p>Claude (план) + Gemini (код и ревью)</p>
+            </div>
+          </div>
+          <div class="row-right">
+            <span class="badge pro">Auto</span>
+            <div class="row-chevron"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+          </div>
+        </div>
+
+        <div class="list-row" onclick="askCustomPrompt('/goal', 'Введите автономную цель для агента:')">
+          <div class="row-left">
+            <div class="row-icon blue">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+            </div>
+            <div class="row-info">
+              <h4>Goal Mode</h4>
+              <p>Автономная цель (работает до финиша)</p>
+            </div>
+          </div>
+          <div class="row-right">
+            <div class="row-chevron"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+          </div>
+        </div>
+
+        <div class="list-row" onclick="askCustomPrompt('/plan', 'Опишите задачу для составления плана:')">
+          <div class="row-left">
+            <div class="row-icon green">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            </div>
+            <div class="row-info">
+              <h4>Plan Mode</h4>
+              <p>Сформировать архитектурный план</p>
+            </div>
+          </div>
+          <div class="row-right">
+            <div class="row-chevron"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 2: МОДЕЛИ (Models) -->
+    <div id="view-models" class="view-content">
+      <div class="section-title">Выбор модели интеллекта</div>
+      
+      <div class="model-card active" onclick="selectModel('Claude Opus 4.6 (Thinking)')">
+        <div class="row-left">
+          <div class="action-icon purple"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 15h-2v-6h2zm0-8h-2V7h2z"/></svg></div>
+          <div class="row-info">
+            <h4>Claude Opus 4.6 <span class="badge pro">Thinking</span></h4>
+            <p>Максимальное качество и глубокие рассуждения</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="model-card" onclick="selectModel('Claude Sonnet 4.6 (Thinking)')">
+        <div class="row-left">
+          <div class="action-icon blue"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+          <div class="row-info">
+            <h4>Claude Sonnet 4.6 <span class="badge think">Thinking</span></h4>
+            <p>Идеальный баланс скорости и кода</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="model-card" onclick="selectModel('Gemini 3.5 Flash (Medium)')">
+        <div class="row-left">
+          <div class="action-icon green"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+          <div class="row-info">
+            <h4>Gemini 3.5 Flash <span class="badge fast">Default</span></h4>
+            <p>Молниеносные ответы и редактирование</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="model-card" onclick="selectModel('Gemini 3.5 Flash (High)')">
+        <div class="row-left">
+          <div class="action-icon orange"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+          <div class="row-info">
+            <h4>Gemini 3.5 Flash <span class="badge pro">High</span></h4>
+            <p>Увеличенный контекст и высокая точность</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="model-card" onclick="selectModel('Gemini 3.1 Pro (High)')">
+        <div class="row-left">
+          <div class="action-icon purple"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+          <div class="row-info">
+            <h4>Gemini 3.1 Pro <span class="badge pro">High</span></h4>
+            <p>Сложные инженерные и архитектурные задачи</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="list-card" style="margin-top: 16px;">
+        <div class="list-row" onclick="sendCommand('/quota', '📊 Проверка квот...')">
+          <div class="row-left">
+            <div class="row-icon blue"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+            <div class="row-info">
+              <h4>Проверить лимиты и квоты</h4>
+              <p>Остаток кредитов аккаунтов Google</p>
+            </div>
+          </div>
+          <div class="row-right">
+            <div class="row-chevron"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 3: ПРОЕКТЫ И ФАЙЛЫ (Workspace) -->
+    <div id="view-workspace" class="view-content">
+      <div class="section-title">Проекты и воркспейс</div>
+      <div class="list-card">
+        <div class="list-row" onclick="sendCommand('/workspace', '🔄 Открытие выбора воркспейса...')">
+          <div class="row-left">
+            <div class="row-icon blue"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
+            <div class="row-info">
+              <h4>Сменить проект</h4>
+              <p>Переключить рабочую папку в IDE</p>
+            </div>
+          </div>
+          <div class="row-right"><div class="row-chevron"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg></div></div>
+        </div>
+
+        <div class="list-row" onclick="sendCommand('/file', '📂 Открытие проводника файлов...')">
+          <div class="row-left">
+            <div class="row-icon green"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+            <div class="row-info">
+              <h4>Проводник файлов</h4>
+              <p>Скачать или просмотреть файлы проекта</p>
+            </div>
+          </div>
+          <div class="row-right"><div class="row-chevron"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg></div></div>
+        </div>
+
+        <div class="list-row" onclick="sendCommand('/artifacts', '📎 Загрузка артефактов...')">
+          <div class="row-left">
+            <div class="row-icon purple"><svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></div>
+            <div class="row-info">
+              <h4>Артефакты диалога</h4>
+              <p>Планы, отчеты и сгенерированные файлы</p>
+            </div>
+          </div>
+          <div class="row-right"><div class="row-chevron"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg></div></div>
+        </div>
+
+        <div class="list-row" onclick="sendCommand('/agents', '💬 Список недавних диалогов...')">
+          <div class="row-left">
+            <div class="row-icon orange"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+            <div class="row-info">
+              <h4>Диалоги и треды</h4>
+              <p>Переключиться на недавние чаты</p>
+            </div>
+          </div>
+          <div class="row-right"><div class="row-chevron"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg></div></div>
+        </div>
+
+        <div class="list-row" onclick="sendCommand('/closeall', '🧹 Закрытие всех вкладок...')">
+          <div class="row-left">
+            <div class="row-icon gray"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+            <div class="row-info">
+              <h4>Закрыть все вкладки</h4>
+              <p>Очистить открытые редакторы файлов</p>
+            </div>
+          </div>
+          <div class="row-right"><div class="row-chevron"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 4: НАСТРОЙКИ (Settings) -->
+    <div id="view-settings" class="view-content">
+      <div class="section-title">Системные настройки</div>
+      <div class="list-card">
+        <div class="list-row" onclick="sendCommand('/autoaccept', '⚡ Переключение авто-подтверждения')">
+          <div class="row-left">
+            <div class="row-icon green"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="row-info">
+              <h4>Авто-подтверждение</h4>
+              <p>Автоклики Accept, Run, Allow</p>
+            </div>
+          </div>
+          <div class="row-right">
+            <span class="badge fast">ВКЛ</span>
+          </div>
+        </div>
+
+        <div class="list-row" onclick="sendCommand('/watcher', '👁️ Переключение Task Watcher')">
+          <div class="row-left">
+            <div class="row-icon blue"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+            <div class="row-info">
+              <h4>Task Watcher</h4>
+              <p>Фоновые уведомления от агента</p>
+            </div>
+          </div>
+          <div class="row-right">
+            <span class="badge think">Активен</span>
+          </div>
+        </div>
+
+        <div class="list-row" onclick="sendCommand('/lang', '🌐 Выбор языка...')">
+          <div class="row-left">
+            <div class="row-icon purple"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+            <div class="row-info">
+              <h4>Язык интерфейса</h4>
+              <p>Русский (Russian)</p>
+            </div>
+          </div>
+          <div class="row-right">
+            <span>🇷🇺 RU</span>
+            <div class="row-chevron"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-title">Сервис и обслуживание</div>
+      <div class="list-card">
+        <div class="list-row" onclick="sendCommand('/status', '📊 Запрос системного статуса...')">
+          <div class="row-left">
+            <div class="row-icon blue"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg></div>
+            <div class="row-info">
+              <h4>Статус системы</h4>
+              <p>Проверка процессов, CDP и памяти</p>
+            </div>
+          </div>
+          <div class="row-right"><div class="row-chevron"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg></div></div>
+        </div>
+
+        <div class="list-row" onclick="sendCommand('/fix_shortcuts', '🛠️ Исправление ярлыков...')">
+          <div class="row-left">
+            <div class="row-icon orange"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+            <div class="row-info">
+              <h4>Исправить ярлыки</h4>
+              <p>Прописать ключ CDP 9333 на рабочем столе</p>
+            </div>
+          </div>
+          <div class="row-right"><div class="row-chevron"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg></div></div>
+        </div>
+
+        <div class="list-row" onclick="sendCommand('/restart', '🔄 Перезапуск бота...')">
+          <div class="row-left">
+            <div class="row-icon red"><svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></div>
+            <div class="row-info">
+              <h4>Перезапустить бота</h4>
+              <p>Сбросить активные сессии и перезапустить</p>
+            </div>
+          </div>
+          <div class="row-right"><div class="row-chevron"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation Tab Bar -->
+  <nav class="tab-bar">
+    <div class="tab-item active" onclick="switchTab('dashboard', this)">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      <span>Пульт</span>
+    </div>
+    <div class="tab-item" onclick="switchTab('models', this)">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+      <span>Модели</span>
+    </div>
+    <div class="tab-item" onclick="switchTab('workspace', this)">
+      <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+      <span>Файлы</span>
+    </div>
+    <div class="tab-item" onclick="switchTab('settings', this)">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <span>Опции</span>
+    </div>
+  </nav>
+
+  <script>
+    // Init Telegram WebApp
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      tg.ready();
+      tg.expand();
+      try { tg.enableClosingConfirmation(); } catch (e) {}
+    }
+
+    // Haptics
+    function haptic(type = 'light') {
+      try {
+        if (tg?.HapticFeedback) {
+          if (type === 'success' || type === 'error' || type === 'warning') {
+            tg.HapticFeedback.notificationOccurred(type);
+          } else {
+            tg.HapticFeedback.impactOccurred(type);
+          }
+        }
+      } catch (_) {}
+    }
+
+    // Toast
+    let toastTimer = null;
+    function showToast(text, icon = '⚡') {
+      const el = document.getElementById('toast');
+      document.getElementById('toastText').textContent = text;
+      document.getElementById('toastIcon').textContent = icon;
+      el.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        el.classList.remove('show');
+      }, 2400);
+    }
+
+    // Switch Tabs
+    function switchTab(viewId, tabEl) {
+      haptic('light');
+      document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.view-content').forEach(el => el.classList.remove('active'));
+      
+      tabEl.classList.add('active');
+      const targetView = document.getElementById('view-' + viewId);
+      if (targetView) targetView.classList.add('active');
+    }
+
+    // Send command to bot
+    function sendCommand(cmd, feedbackText = 'Команда отправлена') {
+      haptic('medium');
+      showToast(feedbackText);
+
+      if (tg && typeof tg.sendData === 'function') {
+        tg.sendData(cmd);
+      } else {
+        console.log('Sending command:', cmd);
+      }
+    }
+
+    // Send custom prompt
+    function sendPrompt() {
+      const input = document.getElementById('promptInput');
+      const text = input.value.trim();
+      if (!text) return;
+      
+      haptic('success');
+      showToast('Задача отправлена агенту', '🚀');
+      input.value = '';
+      
+      if (tg && typeof tg.sendData === 'function') {
+        tg.sendData(text);
+      }
+    }
+
+    // Ask custom prompt with dialog
+    function askCustomPrompt(prefix, title) {
+      haptic('medium');
+      const val = prompt(title);
+      if (val && val.trim()) {
+        sendCommand(`${prefix} ${val.trim()}`, `Запущено: ${prefix}`);
+      }
+    }
+
+    // Select Model
+    function selectModel(modelName) {
+      haptic('success');
+      showToast(`Модель: ${modelName}`, '🤖');
+      sendCommand(`/model ${modelName}`, `Переключение на ${modelName}`);
+      
+      document.querySelectorAll('.model-card').forEach(el => el.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+    }
+
+    // Support Enter key in prompt textarea
+    document.getElementById('promptInput').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendPrompt();
+      }
+    });
+  </script>
+</body>
+</html>
