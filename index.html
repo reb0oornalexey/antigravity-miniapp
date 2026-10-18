@@ -48,6 +48,7 @@
     .msg-bubble, .msg-bubble *, .thought-body, .thought-body *, .thought-body pre, .thought-body code, .chat-textarea, input, textarea {
       user-select: text !important;
       -webkit-user-select: text !important;
+      -webkit-touch-callout: default !important;
     }
 
     /* Suppress system scrollbars and scrollbar corners to fix black square glitch */
@@ -144,7 +145,7 @@
       min-height: 0;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
-      padding-bottom: 24px;
+      padding-bottom: 96px;
     }
 
     /* Header Nav Pills */
@@ -1135,7 +1136,7 @@
       right: 16px;
       max-width: 420px;
       margin: 0 auto;
-      background: rgba(18, 21, 30, 0.82);
+      background: rgba(18, 21, 30, 0.88);
       backdrop-filter: blur(50px) saturate(220%);
       -webkit-backdrop-filter: blur(50px) saturate(220%);
       border: 0.5px solid rgba(255, 255, 255, 0.18);
@@ -1144,6 +1145,8 @@
       padding: 5px 8px;
       z-index: 50;
       pointer-events: auto;
+      isolation: isolate;
+      contain: layout style;
     }
 
     .tabbar-container {
@@ -1207,13 +1210,13 @@
       fill: none;
       stroke: currentColor;
       stroke-width: 2.1;
-      transition: transform 0.25s var(--spring-physics), color 0.25s, filter 0.25s;
+      transition: transform 0.25s var(--spring-physics), color 0.25s;
     }
 
     .apple-tab.active svg {
       color: #818CF8;
-      filter: drop-shadow(0 0 6px rgba(129, 140, 248, 0.5));
-      transform: translateY(-1.5px) scale(1.08) translateZ(0);
+      stroke-width: 2.4;
+      transform: translateY(-1.5px) scale(1.08);
     }
 
     .apple-tab span {
@@ -1566,8 +1569,23 @@
       if (!url) return false;
       const cleanUrl = url.replace(/\/$/, '');
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 2800);
+      const timeoutId = setTimeout(() => controller.abort(), 7000);
       try {
+        // Fast ping first
+        const pingRes = await fetch(`${cleanUrl}/api/ping`, {
+          method: 'GET',
+          signal: controller.signal,
+          headers: {
+            'Bypass-Tunnel-Reminder': 'true',
+            'ngrok-skip-browser-warning': 'true'
+          }
+        }).catch(() => null);
+        if (pingRes && pingRes.ok) {
+          clearTimeout(timeoutId);
+          return true;
+        }
+
+        // Status fallback
         const res = await fetch(`${cleanUrl}/api/status`, {
           method: 'GET',
           signal: controller.signal,
@@ -1600,7 +1618,7 @@
     }
 
     async function initApiBase(forceRefresh = false) {
-      if (isReconnecting) return;
+      if (isReconnecting && !forceRefresh) return;
       isReconnecting = true;
 
       // 1. If served directly by local studio server or direct tunnel domain
@@ -1611,7 +1629,7 @@
         return;
       }
 
-      setConnectionBanner(true, '✦ Antigravity 2.0: поиск активного сервера...');
+      setConnectionBanner(true, '✦ Antigravity 2.0: поиск активного туннеля...');
 
       const candidates = [];
 
@@ -1653,16 +1671,26 @@
       // Deduplicate candidates and filter invalid URLs
       const uniqueCandidates = [...new Set(candidates.filter(c => c && !c.includes('api.trycloudflare.com')))];
 
-      for (const candidate of uniqueCandidates) {
-        const alive = await testCandidate(candidate);
-        if (alive) {
-          API_BASE = candidate;
-          localStorage.setItem('ag_studio_api_base', API_BASE);
-          setConnectionBanner(false);
-          consecutiveApiErrors = 0;
-          isReconnecting = false;
-          return;
-        }
+      if (uniqueCandidates.length > 0) {
+        try {
+          // Parallel test of all candidates with Promise.any: fastest responding wins!
+          const fastestCandidate = await Promise.any(
+            uniqueCandidates.map(async (candidate) => {
+              const alive = await testCandidate(candidate);
+              if (alive) return candidate;
+              throw new Error('Unreachable: ' + candidate);
+            })
+          );
+
+          if (fastestCandidate) {
+            API_BASE = fastestCandidate;
+            localStorage.setItem('ag_studio_api_base', API_BASE);
+            setConnectionBanner(false);
+            consecutiveApiErrors = 0;
+            isReconnecting = false;
+            return;
+          }
+        } catch (_) {}
       }
 
       // If none responded: keep banner visible and retry
@@ -1670,7 +1698,7 @@
       isReconnecting = false;
       setTimeout(() => {
         if (!API_BASE || consecutiveApiErrors > 0) initApiBase(true);
-      }, 3000);
+      }, 3500);
     }
 
     async function apiReq(endpoint, method = 'GET', body = null) {
@@ -1836,10 +1864,11 @@
       haptic('light');
       const input = document.getElementById('chatInput');
       if (input) {
-        let current = input.value || '';
-        // Убираем уже существующий слеш-префикс если был (/goal, /plan и т.д.)
-        current = current.replace(/^\/(goal|plan|browser|learn|boost|schedule|automation)\s*/i, '');
-        input.value = prefix.trimEnd() + ' ' + current;
+        let current = (input.value || '').trim();
+        const cleanCmd = prefix.trim();
+        // Убираем любые повторные команды в начале строки, сохраняя набранный пользователем текст
+        current = current.replace(/^(\/(goal|plan|browser|learn|boost|schedule|automation)\s*)+/gi, '').trim();
+        input.value = cleanCmd + (current ? ' ' + current : ' ');
         input.focus();
         input.setSelectionRange(input.value.length, input.value.length);
         autoResizeChatInput(input);
@@ -1995,6 +2024,16 @@
       return s;
     }
 
+    function resolveMediaUrl(url) {
+      if (!url) return '';
+      if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:') || url.startsWith('blob:')) {
+        return url;
+      }
+      const base = (API_BASE || '').replace(/\/$/, '');
+      const cleanPath = url.startsWith('/') ? url : '/' + url;
+      return base ? (base + cleanPath) : url;
+    }
+
     function renderMessages(messages) {
       const list = document.getElementById('messagesList');
       if (!list) return;
@@ -2033,7 +2072,9 @@
       messages.forEach(m => {
         const isUser = m.role === 'user';
         let innerContent = '';
-        const imageHtml = m.imageUrl ? `<div class="chat-img-wrap" onclick="openImageViewer('${escapeHtml(m.imageUrl)}')"><img src="${escapeHtml(m.imageUrl)}" class="chat-msg-img" alt="Скриншот" loading="lazy" /></div>` : '';
+        const rawImg = m.imageUrl || (Array.isArray(m.images) && m.images[0]) || '';
+        const fullImgSrc = resolveMediaUrl(rawImg);
+        const imageHtml = fullImgSrc ? `<div class="chat-img-wrap" onclick="openImageViewer('${escapeHtml(fullImgSrc)}')"><img src="${escapeHtml(fullImgSrc)}" class="chat-msg-img" alt="Скриншот" loading="lazy" /></div>` : '';
 
         if (isUser) {
           innerContent = escapeHtml(m.text || '').replace(/\n/g, '<br>');
@@ -2266,7 +2307,7 @@
       const img = document.getElementById('imageViewerImg');
       if (!modal || !img) return;
 
-      img.src = src;
+      img.src = resolveMediaUrl(src);
       resetImageViewerZoom();
       modal.style.display = 'flex';
       try { tg?.BackButton?.show(); } catch (_) {}
