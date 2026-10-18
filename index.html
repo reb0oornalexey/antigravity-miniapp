@@ -8,27 +8,32 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
-      --bg-base: #000000;
-      --bg-surface: rgba(28, 28, 30, 0.72);
-      --bg-surface-elevated: rgba(44, 44, 46, 0.85);
-      --bg-glass: rgba(255, 255, 255, 0.08);
-      --glass-border: rgba(255, 255, 255, 0.16);
-      --glass-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.28), inset 0 0 0 0.5px rgba(255, 255, 255, 0.12);
-      --glass-shadow: 0 12px 36px 0 rgba(0, 0, 0, 0.55);
+      --bg-base: #07090E;
+      --bg-surface: rgba(18, 22, 34, 0.76);
+      --bg-surface-elevated: rgba(28, 34, 52, 0.88);
+      --bg-glass: rgba(255, 255, 255, 0.06);
+      --glass-border: rgba(255, 255, 255, 0.12);
+      --glass-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.22), inset 0 0 0 0.5px rgba(255, 255, 255, 0.10);
+      --glass-shadow: 0 12px 36px 0 rgba(0, 0, 0, 0.65);
       --text-primary: #FFFFFF;
-      --text-secondary: rgba(235, 235, 245, 0.65);
-      --text-tertiary: rgba(235, 235, 245, 0.40);
-      --apple-blue: #0A84FF;
-      --apple-blue-gradient: linear-gradient(135deg, #0A84FF 0%, #0066CC 100%);
-      --apple-purple: #BF5AF2;
-      --apple-purple-gradient: linear-gradient(135deg, #BF5AF2 0%, #9035CD 100%);
-      --apple-green: #30D158;
-      --apple-orange: #FF9F0A;
-      --apple-red: #FF453A;
-      --apple-cyan: #64D2FF;
-      --separator: rgba(255, 255, 255, 0.12);
-      --tabbar-bg: rgba(22, 22, 24, 0.88);
-      --spring-physics: cubic-bezier(0.2, 0.8, 0.2, 1);
+      --text-secondary: rgba(224, 231, 255, 0.68);
+      --text-tertiary: rgba(224, 231, 255, 0.40);
+      --ag-indigo: #6366F1;
+      --ag-purple: #8B5CF6;
+      --ag-pink: #EC4899;
+      --ag-cyan: #06B6D4;
+      --ag-gradient: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #EC4899 100%);
+      --ag-primary-gradient: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
+      --apple-blue: #6366F1;
+      --apple-blue-gradient: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
+      --apple-purple: #8B5CF6;
+      --apple-green: #10B981;
+      --apple-orange: #F59E0B;
+      --apple-red: #EF4444;
+      --apple-cyan: #06B6D4;
+      --separator: rgba(255, 255, 255, 0.10);
+      --tabbar-bg: rgba(18, 21, 30, 0.85);
+      --spring-physics: cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     * {
@@ -50,30 +55,30 @@
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "SF Pro", Helvetica, Arial, sans-serif;
     }
 
-    /* Background Liquid Glow */
+    /* Antigravity 2.0 Ambient Glows */
     .ambient-glow {
       position: fixed;
-      top: -120px;
+      top: -140px;
       left: 50%;
       transform: translateX(-50%);
-      width: 360px;
-      height: 360px;
-      background: radial-gradient(circle, rgba(10, 132, 255, 0.22) 0%, rgba(191, 90, 242, 0.12) 45%, rgba(0,0,0,0) 70%);
+      width: 420px;
+      height: 420px;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.24) 0%, rgba(139, 92, 246, 0.14) 45%, rgba(0,0,0,0) 70%);
       pointer-events: none;
       z-index: 0;
-      filter: blur(48px);
+      filter: blur(54px);
     }
 
     .ambient-glow-bottom {
       position: fixed;
-      bottom: 60px;
+      bottom: 50px;
       right: -80px;
-      width: 280px;
-      height: 280px;
-      background: radial-gradient(circle, rgba(48, 209, 88, 0.14) 0%, rgba(0,0,0,0) 65%);
+      width: 320px;
+      height: 320px;
+      background: radial-gradient(circle, rgba(6, 182, 212, 0.16) 0%, rgba(0,0,0,0) 65%);
       pointer-events: none;
       z-index: 0;
-      filter: blur(54px);
+      filter: blur(60px);
     }
 
     /* App Container */
@@ -206,6 +211,22 @@
       cursor: pointer;
     }
 
+    .conn-banner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: rgba(245, 158, 11, 0.16);
+      border: 0.5px solid rgba(245, 158, 11, 0.35);
+      border-radius: 14px;
+      padding: 6px 12px;
+      font-size: 11.5px;
+      color: #FCD34D;
+      margin-bottom: 8px;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+    }
+
     /* Glass Cards */
     .glass-card {
       background: var(--bg-surface);
@@ -260,24 +281,35 @@
     .msg-header {
       display: flex;
       align-items: center;
-      gap: 6px;
-      margin-bottom: 4px;
+      gap: 7px;
+      margin-bottom: 5px;
       padding-left: 2px;
     }
 
-    .msg-avatar {
-      font-size: 13px;
+    .ag-avatar {
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      background: var(--ag-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFF;
+      font-size: 11px;
+      font-weight: 800;
+      box-shadow: 0 0 10px rgba(99, 102, 241, 0.45);
+      flex-shrink: 0;
     }
 
     .msg-sender {
-      font-size: 11px;
+      font-size: 11.5px;
       font-weight: 700;
-      color: var(--apple-blue);
+      color: #C7D2FE;
       letter-spacing: -0.1px;
     }
 
     .msg-bubble {
-      padding: 12px 16px;
+      padding: 13px 16px;
       border-radius: 20px;
       font-size: 14px;
       line-height: 1.5;
@@ -292,14 +324,14 @@
     }
 
     .msg-user {
-      background: var(--apple-blue-gradient);
+      background: var(--ag-primary-gradient);
       color: #FFFFFF;
       border-bottom-right-radius: 6px;
-      box-shadow: 0 4px 16px rgba(10, 132, 255, 0.35);
+      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.38);
     }
 
     .msg-assistant {
-      background: rgba(30, 30, 34, 0.75);
+      background: rgba(18, 22, 34, 0.82);
       backdrop-filter: blur(40px) saturate(210%);
       -webkit-backdrop-filter: blur(40px) saturate(210%);
       border: 0.5px solid var(--glass-border);
@@ -370,10 +402,10 @@
       padding: 0;
     }
 
-    /* Thought Spoiler */
+    /* Antigravity 2.0 Chain of Thought (Reasoning) */
     .thought-spoiler {
-      background: rgba(191, 90, 242, 0.08);
-      border: 0.5px solid rgba(191, 90, 242, 0.28);
+      background: rgba(139, 92, 246, 0.08);
+      border: 0.5px solid rgba(139, 92, 246, 0.28);
       border-radius: 14px;
       padding: 8px 12px;
       margin-bottom: 8px;
@@ -383,7 +415,7 @@
     .thought-spoiler summary {
       cursor: pointer;
       font-weight: 600;
-      color: var(--apple-purple);
+      color: #C084FC;
       outline: none;
       user-select: none;
       display: flex;
@@ -401,37 +433,36 @@
       user-select: text;
     }
 
-    /* Antigravity IDE Tool Badges */
-    .ide-tool-badge {
+    /* Antigravity 2.0 Action Badges */
+    .ag-action-badge {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      background: rgba(10, 132, 255, 0.12);
-      border: 0.5px solid rgba(10, 132, 255, 0.3);
-      border-radius: 10px;
+      gap: 7px;
+      background: rgba(99, 102, 241, 0.12);
+      border: 0.5px solid rgba(139, 92, 246, 0.26);
+      border-radius: 12px;
       padding: 4px 10px;
       font-size: 11.5px;
-      color: #FFF;
+      color: #E0E7FF;
       margin-bottom: 6px;
       max-width: 100%;
     }
 
-    .tool-dot {
+    .ag-action-dot {
       width: 6px;
       height: 6px;
       border-radius: 50%;
-      background: var(--apple-cyan);
-      box-shadow: 0 0 6px var(--apple-cyan);
+      background: var(--ag-cyan);
+      box-shadow: 0 0 6px var(--ag-cyan);
       flex-shrink: 0;
     }
 
-    .tool-name {
+    .ag-action-name {
       font-weight: 700;
-      color: var(--apple-cyan);
-      font-family: ui-monospace, monospace;
+      color: #A5B4FC;
     }
 
-    .tool-summary {
+    .ag-action-desc {
       color: var(--text-secondary);
       white-space: nowrap;
       overflow: hidden;
@@ -932,7 +963,7 @@
       background: rgba(255, 255, 255, 0.12);
     }
 
-    /* Floating Liquid Glass Island (visionOS / iOS 18 Capsule Dock) */
+    /* Floating Liquid Glass Island with Spring Gliding Indicator */
     .apple-tabbar {
       position: fixed;
       bottom: calc(12px + env(safe-area-inset-bottom, 8px));
@@ -940,25 +971,49 @@
       right: 16px;
       max-width: 420px;
       margin: 0 auto;
-      background: rgba(24, 24, 28, 0.78);
+      background: rgba(18, 21, 30, 0.82);
       backdrop-filter: blur(50px) saturate(220%);
       -webkit-backdrop-filter: blur(50px) saturate(220%);
-      border: 0.5px solid rgba(255, 255, 255, 0.22);
-      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+      border: 0.5px solid rgba(255, 255, 255, 0.18);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.3);
       border-radius: 36px;
-      padding: 6px 10px;
+      padding: 5px 8px;
       z-index: 50;
       pointer-events: auto;
     }
 
     .tabbar-container {
+      position: relative;
       display: flex;
       justify-content: space-around;
       align-items: center;
       gap: 4px;
     }
 
+    /* The Smooth Gliding Liquid Pill Indicator */
+    .tab-gliding-pill {
+      position: absolute;
+      top: 3px;
+      bottom: 3px;
+      left: 0;
+      width: 0;
+      border-radius: 24px;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.40) 0%, rgba(139, 92, 246, 0.32) 100%);
+      border: 0.5px solid rgba(255, 255, 255, 0.32);
+      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.38);
+      pointer-events: none;
+      transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1), width 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 1;
+      opacity: 0;
+    }
+
+    .tab-gliding-pill.visible {
+      opacity: 1;
+    }
+
     .apple-tab {
+      position: relative;
+      z-index: 2;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -966,11 +1021,12 @@
       gap: 3px;
       cursor: pointer;
       color: var(--text-tertiary);
-      transition: all 0.22s var(--spring-physics);
+      transition: color 0.22s, transform 0.2s var(--spring-physics);
       flex: 1;
-      padding: 6px 4px;
-      border-radius: 22px;
-      position: relative;
+      padding: 7px 4px;
+      border-radius: 24px;
+      background: transparent !important;
+      box-shadow: none !important;
     }
 
     .apple-tab:active {
@@ -979,13 +1035,6 @@
 
     .apple-tab.active {
       color: #FFFFFF;
-      background: rgba(255, 255, 255, 0.12);
-      box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, 0.2), 0 4px 16px rgba(10, 132, 255, 0.25);
-    }
-
-    .apple-tab.active svg {
-      color: var(--apple-blue);
-      filter: drop-shadow(0 0 8px rgba(10, 132, 255, 0.6));
     }
 
     .apple-tab svg {
@@ -994,13 +1043,25 @@
       fill: none;
       stroke: currentColor;
       stroke-width: 2.1;
-      transition: transform 0.2s var(--spring-physics), color 0.2s;
+      transition: transform 0.25s var(--spring-physics), color 0.25s, filter 0.25s;
+    }
+
+    .apple-tab.active svg {
+      color: #818CF8;
+      filter: drop-shadow(0 0 10px rgba(129, 140, 248, 0.75));
+      transform: translateY(-1.5px) scale(1.08);
     }
 
     .apple-tab span {
       font-size: 10px;
       font-weight: 600;
       letter-spacing: -0.1px;
+      transition: color 0.25s, font-weight 0.25s;
+    }
+
+    .apple-tab.active span {
+      color: #FFFFFF;
+      font-weight: 700;
     }
   </style>
 </head>
@@ -1032,12 +1093,18 @@
     <header class="dynamic-island">
       <div class="island-left">
         <span class="status-pulse"></span>
-        <span class="island-title" id="islandTitle">Antigravity Live</span>
+        <span class="island-title" id="islandTitle">✦ Antigravity 2.0</span>
       </div>
       <div class="island-badge" id="islandModelBadge" onclick="navigateTab('models', document.getElementById('tabNavModels'))">
         ⚡ Gemini 3.8 Flash
       </div>
     </header>
+
+    <!-- Auto-reconnect banner if connection is unstable -->
+    <div id="connBanner" class="conn-banner" style="display:none;" onclick="initApiBase(true)">
+      <span class="status-pulse" style="background:var(--apple-orange);"></span>
+      <span>Поиск сервера Antigravity... Нажмите для повтора</span>
+    </div>
 
     <!-- ==================== VIEW 1: STUDIO CHAT ==================== -->
     <main class="app-view active" id="view-chat">
@@ -1046,12 +1113,12 @@
         <div class="messages-scroll" id="messagesList">
           <div class="msg-wrapper assistant">
             <div class="msg-header">
-              <span class="msg-avatar">✨</span>
-              <span class="msg-sender">Antigravity Agent</span>
+              <div class="ag-avatar">✦</div>
+              <span class="msg-sender">Antigravity 2.0</span>
             </div>
             <div class="msg-bubble msg-assistant">
-              ✨ <b>Antigravity Studio подключена</b><br>
-              Вся история сообщений, размышления агента и вызовы инструментов синхронизируются в реальном времени.
+              ✦ <b>Antigravity 2.0 подключена</b><br>
+              Чат, размышления модели и запуск инструментов синхронизируются в реальном времени.
             </div>
             <div class="msg-time">Только что</div>
           </div>
@@ -1102,20 +1169,20 @@
       <div class="glass-card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
           <div>
-            <h3 style="font-size:16px; font-weight:600;">📸 Снимок экрана IDE</h3>
-            <div style="font-size:12px; color:var(--text-secondary);">Живое окно Antigravity в высоком разрешении</div>
+            <h3 style="font-size:16px; font-weight:600;">✦ Antigravity Live Студия</h3>
+            <div style="font-size:12px; color:var(--text-secondary);">Интерактивное рабочее пространство агента</div>
           </div>
           <button class="ws-pill-btn" onclick="refreshScreenshot()">🔄 Обновить</button>
         </div>
         <div class="screen-img-wrap">
-          <img src="" class="screen-img" id="screenImg" alt="Снимок экрана IDE" onclick="expandImage(this.src)">
+          <img src="" class="screen-img" id="screenImg" alt="Antigravity Live Студия" onclick="expandImage(this.src)">
         </div>
       </div>
 
       <!-- Artifacts Section -->
       <div class="glass-card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-          <h3 style="font-size:15px; font-weight:600;">📂 Артефакты и задачи</h3>
+          <h3 style="font-size:15px; font-weight:600;">✦ Артефакты и задачи</h3>
           <span class="model-pill" onclick="loadArtifacts()">🔄 Обновить</span>
         </div>
         <div class="item-list-apple" id="artifactsList">
@@ -1129,8 +1196,8 @@
       <div class="glass-card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
           <div>
-            <h3 style="font-size:16px; font-weight:600; letter-spacing:-0.2px;">🤖 Доступные модели</h3>
-            <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">Авто-обнаружение из Google DeepMind & Antigravity</div>
+            <h3 style="font-size:16px; font-weight:600; letter-spacing:-0.2px;">✦ Нейросетевые модели</h3>
+            <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">Авто-синхронизация квот и тиров с Antigravity 2.0</div>
           </div>
           <span class="model-pill" onclick="loadModels(true)">🔄 Обновить</span>
         </div>
@@ -1159,7 +1226,7 @@
 
         <div class="bento-cell" onclick="createNewChat()">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size:22px;">✨</span>
+            <span style="font-size:22px;">✦</span>
             <span class="chevron-down">›</span>
           </div>
           <div class="cell-title">Новый диалог</div>
@@ -1171,7 +1238,7 @@
       <div class="glass-card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
           <div>
-            <h3 style="font-size:16px; font-weight:600;">⚡ Установленные скиллы</h3>
+            <h3 style="font-size:16px; font-weight:600;">✦ Скиллы Antigravity</h3>
             <div style="font-size:12px; color:var(--text-secondary);" id="skillsSubtitle">Загрузка скиллов...</div>
           </div>
           <span class="model-pill" onclick="loadSkills(true)">🔄 Обновить</span>
@@ -1226,14 +1293,16 @@
     <img id="fullscreenImg" style="max-width:96vw; max-height:86vh; border-radius:16px; box-shadow:0 12px 40px rgba(0,0,0,0.85); object-fit:contain;" />
   </div>
 
-  <!-- Bottom Navigation TabBar (4 Clean Tabs) -->
+  <!-- Bottom Navigation TabBar (Floating Liquid Glass Island with Spring Gliding Indicator) -->
   <nav class="apple-tabbar">
-    <div class="tabbar-container">
-      <div class="apple-tab active" onclick="navigateTab('chat', this)">
+    <div class="tabbar-container" id="tabbarContainer">
+      <div class="tab-gliding-pill" id="tabGlidingPill"></div>
+
+      <div class="apple-tab active" id="tabNavChat" onclick="navigateTab('chat', this)">
         <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         <span>Чат</span>
       </div>
-      <div class="apple-tab" onclick="navigateTab('screen', this)">
+      <div class="apple-tab" id="tabNavScreen" onclick="navigateTab('screen', this)">
         <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
         <span>Студия</span>
       </div>
@@ -1313,62 +1382,123 @@
     // --- DYNAMIC BACKEND AUTO-DISCOVERY (GitHub Pages & Tunnel Bridge) ---
     let API_BASE = '';
     let consecutiveApiErrors = 0;
+    let isReconnecting = false;
+
+    async function testCandidate(url) {
+      if (!url) return false;
+      const cleanUrl = url.replace(/\/$/, '');
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2800);
+      try {
+        const res = await fetch(`${cleanUrl}/api/status`, {
+          method: 'GET',
+          signal: controller.signal,
+          headers: {
+            'Bypass-Tunnel-Reminder': 'true',
+            'ngrok-skip-browser-warning': 'true'
+          }
+        });
+        clearTimeout(timeoutId);
+        if (res.ok) {
+          const data = await res.json();
+          return !!(data && data.ok);
+        }
+      } catch (_) {
+        clearTimeout(timeoutId);
+      }
+      return false;
+    }
+
+    function setConnectionBanner(show, text = '') {
+      const banner = document.getElementById('connBanner');
+      if (!banner) return;
+      if (show) {
+        banner.style.display = 'flex';
+        const label = banner.querySelector('span:last-child');
+        if (label) label.textContent = text || '✦ Antigravity Studio: переподключение...';
+      } else {
+        banner.style.display = 'none';
+      }
+    }
 
     async function initApiBase(forceRefresh = false) {
-      // 1. If served directly by local studio server tunnel (not github.io)
+      if (isReconnecting) return;
+      isReconnecting = true;
+
+      // 1. If served directly by local studio server or direct tunnel domain
       if (!window.location.hostname.includes('github.io')) {
         API_BASE = window.location.origin;
+        setConnectionBanner(false);
+        isReconnecting = false;
         return;
       }
 
-      // 2. Check query string ?server=
+      setConnectionBanner(true, '✦ Antigravity 2.0: поиск активного сервера...');
+
+      const candidates = [];
+
+      // Priority 1: Fetch live config.json from GitHub Pages repository
+      try {
+        const cfgRes = await fetch('config.json?v=' + Date.now(), { cache: 'no-store' });
+        if (cfgRes.ok) {
+          const cfg = await cfgRes.json();
+          if (cfg && cfg.apiUrl) candidates.push(cfg.apiUrl.replace(/\/$/, ''));
+        }
+      } catch (_) {}
+
+      // Priority 2: Telegram WebApp query param ?server=
       const urlParams = new URLSearchParams(window.location.search);
       const serverParam = urlParams.get('server');
-      if (serverParam && !forceRefresh) {
-        API_BASE = serverParam.replace(/\/$/, '');
-        localStorage.setItem('ag_studio_api_base', API_BASE);
-        return;
-      }
+      if (serverParam) candidates.push(serverParam.replace(/\/$/, ''));
 
-      // 3. Check Telegram WebApp start_param
-      if (tg?.initDataUnsafe?.start_param && !forceRefresh) {
+      // Priority 3: Telegram start_param
+      if (tg?.initDataUnsafe?.start_param) {
         const sp = tg.initDataUnsafe.start_param;
         if (sp.startsWith('srv_')) {
           try {
-            API_BASE = atob(sp.replace('srv_', ''));
-            localStorage.setItem('ag_studio_api_base', API_BASE);
-            return;
+            candidates.push(atob(sp.replace('srv_', '')).replace(/\/$/, ''));
           } catch (_) {}
         }
       }
 
-      // 4. Check cached localStorage if not forcing refresh
-      if (!forceRefresh) {
-        const cached = localStorage.getItem('ag_studio_api_base');
-        if (cached) {
-          API_BASE = cached;
+      // Priority 4: Cached localStorage
+      const cached = localStorage.getItem('ag_studio_api_base');
+      if (cached) candidates.push(cached.replace(/\/$/, ''));
+
+      // Deduplicate candidates
+      const uniqueCandidates = [...new Set(candidates.filter(Boolean))];
+
+      for (const candidate of uniqueCandidates) {
+        const alive = await testCandidate(candidate);
+        if (alive) {
+          API_BASE = candidate;
+          localStorage.setItem('ag_studio_api_base', API_BASE);
+          setConnectionBanner(false);
+          consecutiveApiErrors = 0;
+          isReconnecting = false;
+          return;
         }
       }
 
-      // 5. Fetch live config.json from GitHub Pages repository
-      try {
-        const resp = await fetch('config.json?t=' + Date.now());
-        if (resp.ok) {
-          const conf = await resp.json();
-          if (conf && conf.apiUrl) {
-            API_BASE = conf.apiUrl.replace(/\/$/, '');
-            localStorage.setItem('ag_studio_api_base', API_BASE);
-          }
-        }
-      } catch (_) {}
+      // If none responded: keep banner visible and retry
+      setConnectionBanner(true, '⚠️ Ожидание запуска Antigravity Studio (нажмите для повтора)');
+      isReconnecting = false;
+      setTimeout(() => {
+        if (!API_BASE || consecutiveApiErrors > 0) initApiBase(true);
+      }, 3000);
     }
 
     async function apiReq(endpoint, method = 'GET', body = null) {
+      if (!API_BASE) {
+        await initApiBase();
+        if (!API_BASE) return null;
+      }
+
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 8000);
+      const timeoutId = setTimeout(() => controller.abort(), 9000);
 
       try {
-        const fullUrl = (API_BASE ? API_BASE : '') + endpoint;
+        const fullUrl = API_BASE + endpoint;
         const opts = { 
           method, 
           signal: controller.signal,
@@ -1384,9 +1514,14 @@
         
         if (res.ok) {
           consecutiveApiErrors = 0;
+          setConnectionBanner(false);
           return await res.json();
         } else {
           consecutiveApiErrors++;
+          if (consecutiveApiErrors >= 2) {
+            setConnectionBanner(true, '⚠️ Соединение нестабильно... Поиск туннеля');
+            initApiBase(true);
+          }
           return null;
         }
       } catch (e) {
@@ -1394,21 +1529,51 @@
         consecutiveApiErrors++;
         console.warn('API Error:', endpoint, e.message);
 
-        // Auto-heal: if we had multiple errors, reset cached URL and re-query GitHub Pages config
-        if (consecutiveApiErrors >= 3) {
-          localStorage.removeItem('ag_studio_api_base');
+        if (consecutiveApiErrors >= 2) {
+          setConnectionBanner(true, '⚠️ Сбой сети... Поиск нового туннеля');
           initApiBase(true);
         }
         return null;
       }
     }
 
-    // --- TAB NAVIGATION ---
+    // --- TAB NAVIGATION WITH SMOOTH GLIDING SPRING PILL ---
+    function updateGlidingPill(activeTabEl) {
+      const pill = document.getElementById('tabGlidingPill');
+      const container = document.getElementById('tabbarContainer');
+      if (!pill || !container) return;
+
+      const target = activeTabEl || container.querySelector('.apple-tab.active');
+      if (!target) {
+        pill.classList.remove('visible');
+        return;
+      }
+
+      const containerRect = container.getBoundingClientRect();
+      const targetRect = target.getBoundingClientRect();
+
+      if (targetRect.width === 0) {
+        requestAnimationFrame(() => updateGlidingPill(target));
+        return;
+      }
+
+      const offsetLeft = targetRect.left - containerRect.left;
+      pill.style.transform = `translateX(${offsetLeft}px)`;
+      pill.style.width = `${targetRect.width}px`;
+      pill.classList.add('visible');
+    }
+
     function navigateTab(tabId, el) {
-      haptic('light');
+      haptic('selection');
       document.querySelectorAll('.apple-tab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
-      if (el) el.classList.add('active');
+
+      const activeTab = el || document.getElementById('tabNav' + tabId.charAt(0).toUpperCase() + tabId.slice(1));
+      if (activeTab) {
+        activeTab.classList.add('active');
+        updateGlidingPill(activeTab);
+      }
+
       const target = document.getElementById('view-' + tabId);
       if (target) target.classList.add('active');
 
@@ -1429,8 +1594,9 @@
       const title = document.getElementById('islandTitle');
 
       if (data && data.ok) {
+        setConnectionBanner(false);
         if (pulse) pulse.style.background = 'var(--apple-green)';
-        if (title) title.textContent = 'Antigravity Live';
+        if (title) title.textContent = '✦ Antigravity 2.0';
 
         if (data.currentWorkspace) {
           const wsLabel = document.getElementById('activeWorkspaceLabel');
@@ -1439,7 +1605,9 @@
 
         if (data.currentModel) {
           const parts = data.currentModel.split(' ');
-          document.getElementById('islandModelBadge').textContent = '⚡ ' + parts[0] + ' ' + (parts[1] || '');
+          const shortName = parts.length > 2 ? parts.slice(0, 2).join(' ') : data.currentModel;
+          const badge = document.getElementById('islandModelBadge');
+          if (badge) badge.textContent = '⚡ ' + shortName;
         }
         if (data.permissionMode) {
           currentTurboState = data.permissionMode.id === 'turbo';
@@ -1451,7 +1619,7 @@
         }
       } else {
         if (pulse) pulse.style.background = 'var(--apple-orange)';
-        if (title) title.textContent = 'Подключение...';
+        if (title) title.textContent = '✦ Подключение...';
       }
     }
 
@@ -1609,12 +1777,13 @@
         list.innerHTML = `
           <div class="msg-wrapper assistant">
             <div class="msg-header">
-              <span class="msg-avatar">✨</span>
-              <span class="msg-sender">Antigravity Agent</span>
+              <div class="ag-avatar">✦</div>
+              <span class="msg-sender">✦ Antigravity 2.0</span>
             </div>
-            <div class="msg-bubble msg-assistant" style="text-align:center; padding:16px;">
-              ✨ <b>Antigravity Studio готова к работе.</b><br>
-              <span style="font-size:12px; color:var(--text-secondary);">Выберите чип выше или введите команду для агента.</span>
+            <div class="msg-bubble msg-assistant" style="text-align:center; padding:18px 16px;">
+              <div style="font-size:22px; margin-bottom:6px; color:#A5B4FC;">✦</div>
+              <b style="font-size:15px; color:#FFFFFF;">Antigravity 2.0 готова к работе</b><br>
+              <span style="font-size:12.5px; color:var(--text-secondary); margin-top:4px; display:inline-block;">Отправьте задачу агенту или используйте чипы /goal и /plan.</span>
             </div>
           </div>
         `;
@@ -1655,20 +1824,20 @@
             const isOpen = openThoughtIds.has(String(m.id)) ? 'open' : '';
             innerContent += `
               <details class="thought-spoiler" data-msg-id="${m.id}" ${isOpen}>
-                <summary>🧠 Deep Reasoning (Размышления)</summary>
+                <summary>✦ Chain of Thought (Размышления)</summary>
                 <div class="thought-body">${formatMarkdown(m.thinking)}</div>
               </details>
             `;
           }
 
-          // Render tool actions in Antigravity IDE badge style
+          // Render tool actions in Antigravity 2.0 Action Badges
           if (Array.isArray(m.tools) && m.tools.length > 0) {
             m.tools.forEach(t => {
               innerContent += `
-                <div class="ide-tool-badge">
-                  <span class="tool-dot"></span>
-                  <span class="tool-name">${escapeHtml(t.name)}</span>
-                  <span class="tool-summary">${escapeHtml(t.summary || '')}</span>
+                <div class="ag-action-badge">
+                  <span class="ag-action-dot"></span>
+                  <span class="ag-action-name">✦ ${escapeHtml(t.name)}</span>
+                  <span class="ag-action-desc">${escapeHtml(t.summary || '')}</span>
                 </div>
               `;
             });
@@ -1680,8 +1849,8 @@
           html += `
             <div class="msg-wrapper assistant">
               <div class="msg-header">
-                <span class="msg-avatar">✨</span>
-                <span class="msg-sender">Antigravity Agent</span>
+                <div class="ag-avatar">✦</div>
+                <span class="msg-sender">✦ Antigravity 2.0</span>
                 ${m.model ? `<span class="model-pill" style="font-size:9.5px; padding:1px 6px;">${escapeHtml(m.model)}</span>` : ''}
               </div>
               <div class="msg-bubble msg-assistant">
@@ -2114,15 +2283,30 @@
       }
     });
 
+    window.addEventListener('resize', () => {
+      const active = document.querySelector('.apple-tab.active');
+      if (active) updateGlidingPill(active);
+    });
+
     // --- INITIAL BOOTSTRAP ---
     (async () => {
+      // Position gliding pill on startup
+      requestAnimationFrame(() => {
+        const active = document.querySelector('.apple-tab.active');
+        if (active) updateGlidingPill(active);
+      });
+      setTimeout(() => {
+        const active = document.querySelector('.apple-tab.active');
+        if (active) updateGlidingPill(active);
+      }, 120);
+
       await initApiBase();
       await loadStatus();
       await loadModels();
       await loadChatMessages();
       refreshScreenshot();
-      setInterval(loadChatMessages, 4000);
-      setInterval(loadStatus, 12000);
+      setInterval(loadChatMessages, 3500);
+      setInterval(loadStatus, 9000);
     })();
   </script>
 </body>
